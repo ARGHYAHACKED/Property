@@ -31,7 +31,7 @@ const OtpVerify = () => {
       setError("");
 
       // Make API call to update user details
-      const response = await axios.post("http://localhost:5000/api/auth/completeRegistration", {
+      const response = await axios.post("http://localhost:5001/api/auth/completeRegistration", {
         userId,
         name: formData.name,
         email: formData.email,

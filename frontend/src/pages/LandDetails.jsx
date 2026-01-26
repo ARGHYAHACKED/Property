@@ -31,7 +31,7 @@ const LandDetails = () => {
   useEffect(() => {
     const fetchLand = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/lands/${id}`);
+        const response = await axios.get(`http://localhost:5001/api/lands/${id}`);
         setLand(response.data);
         setLoading(false);
       } catch (err) {
@@ -76,7 +76,7 @@ const LandDetails = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/land-request/create',
+        'http://localhost:5001/api/land-request/create',
         { landId: id }, // Send only the landId
         {
           headers: {

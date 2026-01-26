@@ -55,7 +55,7 @@ const AdminDashboard = () => {
 
   const fetchMessages = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/messages', {
+      const response = await axios.get('http://localhost:5001/api/messages', {
         withCredentials: true,
       });
       if (response.status === 200) {
@@ -68,7 +68,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/auth/users', {
+      const response = await axios.get('http://localhost:5001/api/auth/users', {
         withCredentials: true,
       });
       if (response.status === 200) {
@@ -81,7 +81,7 @@ const AdminDashboard = () => {
 
   const fetchProperties = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/properties', {
+      const response = await axios.get('http://localhost:5001/api/properties', {
         withCredentials: true,
       });
       if (response.status === 200) {
@@ -94,7 +94,7 @@ const AdminDashboard = () => {
 
   const fetchLands = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/lands', {
+      const response = await axios.get('http://localhost:5001/api/lands', {
         withCredentials: true,
       });
       if (response.status === 200) {
@@ -135,7 +135,7 @@ const AdminDashboard = () => {
     try {
       const endpoint = formData.type === 'property' ? 'properties' : 'lands';
       const response = await axios.post(
-        `http://localhost:5000/api/${endpoint}`,
+        `http://localhost:5001/api/${endpoint}`,
         formData,
         {
           headers: {
@@ -171,7 +171,7 @@ const AdminDashboard = () => {
 
   const handleDeleteMessage = async (messageId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/messages/${messageId}`, {
+      await axios.delete(`http://localhost:5001/api/messages/${messageId}`, {
         withCredentials: true,
       });
       setMessages(messages.filter(message => message._id !== messageId));
@@ -186,7 +186,7 @@ const AdminDashboard = () => {
 
     try {
       const endpoint = itemToDelete.type === 'property' ? 'properties' : 'lands';
-      await axios.delete(`http://localhost:5000/api/${endpoint}/${itemToDelete.id}`, {
+      await axios.delete(`http://localhost:5001/api/${endpoint}/${itemToDelete.id}`, {
         withCredentials: true,
       });
       if (itemToDelete.type === 'property') {

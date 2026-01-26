@@ -16,7 +16,7 @@ const Navbar = () => {
       if (token) {
         try {
           // Verify token with backend
-          const response = await axios.get("http://localhost:5000/api/auth/verify", {
+          const response = await axios.get("http://localhost:5001/api/auth/verify", {
             headers: {
               Authorization: `Bearer ${token}`, // Include token in Authorization header
             },

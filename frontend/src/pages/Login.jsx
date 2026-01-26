@@ -26,7 +26,7 @@ const LoginPage = () => {
 
     const handleSendOtp = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/login', { phone });
+            const response = await axios.post('http://localhost:5001/api/auth/login', { phone });
             if (response.data.message) {
                 setMessage(response.data.message);
                 setIsOtpSent(true);
@@ -39,7 +39,7 @@ const LoginPage = () => {
 
     const handleVerifyOtp = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/loginVerifyOtp', { phone, otp });
+            const response = await axios.post('http://localhost:5001/api/auth/loginVerifyOtp', { phone, otp });
             console.log(response)
             console.log(response.data.token)
             if (response.data.token) {

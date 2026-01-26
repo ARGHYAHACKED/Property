@@ -13,7 +13,7 @@ const Login = () => {
 
     try {
       // Send POST request to the login API endpoint
-      const response = await axios.post('http://localhost:5000/api/admin/login', 
+      const response = await axios.post('http://localhost:5001/api/admin/login', 
         { email, password },
         { withCredentials: true }  // To include cookies in the request
       );

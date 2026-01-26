@@ -26,7 +26,7 @@ const SignUp = () => {
 
     try {
       // Send API request to register user and generate OTP
-      const response = await axios.post("http://localhost:5000/api/auth/register", {
+      const response = await axios.post("http://localhost:5001/api/auth/register", {
         phone: mobile,
       });
 
@@ -41,7 +41,7 @@ const SignUp = () => {
   const handleOtpVerification = async () => {
     try {
       // Send API request to verify OTP
-      const response = await axios.post("http://localhost:5000/api/auth/verify-otp", {
+      const response = await axios.post("http://localhost:5001/api/auth/verify-otp", {
         phone: mobile,
         otp,
       });

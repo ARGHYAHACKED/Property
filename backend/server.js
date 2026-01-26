@@ -34,6 +34,7 @@ const corsOptions = {
   credentials: true, // Allow cookies to be sent with the request
 };
 app.use(cors(corsOptions)); // Use the CORS middleware with the updated options
+app.options('*', cors(corsOptions));
 
 // Middleware
 app.use(express.json({ limit: '10mb' })); // Increase payload limit
@@ -57,5 +58,5 @@ app.use("/api/messages", messageRoutes);
 // app.use('/api/land-request', requestLandRoutes);
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

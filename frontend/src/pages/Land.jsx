@@ -9,6 +9,7 @@ import {
   Button,
 } from "@mui/material";
 import axios from "axios";
+import API_BASE_URL from '../config/api';
 
 const Land = () => {
   const [lands, setLands] = useState([]);
@@ -24,7 +25,7 @@ const Land = () => {
   useEffect(() => {
     const fetchLands = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/api/lands");
+        const response = await axios.get(`${API_BASE_URL}/api/lands`);
         setLands(response.data);
       } catch (error) {
         console.error("Error fetching lands:", error);
@@ -58,7 +59,7 @@ const Land = () => {
 
   const handleSellSubmit = async () => {
     try {
-      await axios.post("http://localhost:5001/api/lands", sellData);
+      await axios.post(`${API_BASE_URL}/api/lands`, sellData);
       alert("Land added successfully!");
       setIsSelling(false);
       setSellData({ title: "", description: "", price: "", location: "", area: "" });

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie"; // Import js-cookie
+import API_BASE_URL from '../config/api';
 
 const SignUp = () => {
   const [mobile, setMobile] = useState("");
@@ -26,7 +27,7 @@ const SignUp = () => {
 
     try {
       // Send API request to register user and generate OTP
-      const response = await axios.post("http://localhost:5001/api/auth/register", {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/register`, {
         phone: mobile,
       });
 
@@ -41,7 +42,7 @@ const SignUp = () => {
   const handleOtpVerification = async () => {
     try {
       // Send API request to verify OTP
-      const response = await axios.post("http://localhost:5001/api/auth/verify-otp", {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/verify-otp`, {
         phone: mobile,
         otp,
       });

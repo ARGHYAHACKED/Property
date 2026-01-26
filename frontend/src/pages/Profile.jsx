@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
+import API_BASE_URL from '../config/api';
 
 const Profile = ({ onLogout }) => {
   const [user, setUser] = useState(null);
@@ -18,7 +19,7 @@ const Profile = ({ onLogout }) => {
           return;
         }
 
-        const response = await fetch("http://localhost:5001/api/auth/profile", {
+        const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

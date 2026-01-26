@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import PersonIcon from "@mui/icons-material/Person";
 import Cookies from "js-cookie";
 import axios from "axios";
+import API_BASE_URL from '../config/api';
 
 const Navbar = () => {
   const location = useLocation();
@@ -16,7 +17,7 @@ const Navbar = () => {
       if (token) {
         try {
           // Verify token with backend
-          const response = await axios.get("http://localhost:5001/api/auth/verify", {
+          const response = await axios.get(`${API_BASE_URL}/api/auth/verify`, {
             headers: {
               Authorization: `Bearer ${token}`, // Include token in Authorization header
             },

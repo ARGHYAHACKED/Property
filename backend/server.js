@@ -28,7 +28,22 @@ app.use(cookieParser());
 
 // CORS Configuration to allow credentials
 const corsOptions = {
-  origin: 'http://localhost:5173', // Replace with your frontend URL
+  origin: function (origin, callback) {
+    // Allowed origins
+    const allowedOrigins = [
+      'http://localhost:5173', // Local development
+      'http://localhost:3000',  // Alternative local development
+      'https://property-0lu6.onrender.com', // Render backend URL
+      process.env.FRONTEND_URL // Environment variable (Vercel, etc)
+    ];
+
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Allow cookies to be sent with the request

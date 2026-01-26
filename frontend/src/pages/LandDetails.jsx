@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 import {
   Button,
   Card,
@@ -31,7 +32,7 @@ const LandDetails = () => {
   useEffect(() => {
     const fetchLand = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/api/lands/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/api/lands/${id}`);
         setLand(response.data);
         setLoading(false);
       } catch (err) {
@@ -76,7 +77,7 @@ const LandDetails = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:5001/api/land-request/create',
+        `${API_BASE_URL}/api/land-request/create`,
         { landId: id }, // Send only the landId
         {
           headers: {

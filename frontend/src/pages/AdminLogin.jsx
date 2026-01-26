@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ const Login = () => {
 
     try {
       // Send POST request to the login API endpoint
-      const response = await axios.post('http://localhost:5001/api/admin/login', 
+      const response = await axios.post(`${API_BASE_URL}/api/admin/login`, 
         { email, password },
         { withCredentials: true }  // To include cookies in the request
       );

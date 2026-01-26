@@ -2,6 +2,7 @@ import React, { useState , useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from '../config/api';
 
 const LoginPage = () => {
     const [phone, setPhone] = useState('');
@@ -26,7 +27,7 @@ const LoginPage = () => {
 
     const handleSendOtp = async () => {
         try {
-            const response = await axios.post('http://localhost:5001/api/auth/login', { phone });
+            const response = await axios.post(`${API_BASE_URL}/api/auth/login`, { phone });
             if (response.data.message) {
                 setMessage(response.data.message);
                 setIsOtpSent(true);
@@ -39,7 +40,7 @@ const LoginPage = () => {
 
     const handleVerifyOtp = async () => {
         try {
-            const response = await axios.post('http://localhost:5001/api/auth/loginVerifyOtp', { phone, otp });
+            const response = await axios.post(`${API_BASE_URL}/api/auth/loginVerifyOtp`, { phone, otp });
             console.log(response)
             console.log(response.data.token)
             if (response.data.token) {

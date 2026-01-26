@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 import {
   Button,
   Card,
@@ -32,7 +33,7 @@ const PropertyDetails = () => {
   useEffect(() => {
     const fetchLand = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/api/properties/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/api/properties/${id}`);
         setLand(response.data);
         setLoading(false);
       } catch (err) {
@@ -78,7 +79,7 @@ const PropertyDetails = () => {
     console.log(requestData);
 
     try {
-      await axios.post('http://localhost:5001/api/land-request', requestData);
+      await axios.post(`${API_BASE_URL}/api/land-request`, requestData);
       alert('Request submitted successfully!');
       setIsModalOpen(false);
     } catch (error) {

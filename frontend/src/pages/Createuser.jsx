@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie"; // Import js-cookie
+import API_BASE_URL from '../config/api';
 
 const OtpVerify = () => {
   const [formData, setFormData] = useState({ name: "", email: "" });
@@ -31,7 +32,7 @@ const OtpVerify = () => {
       setError("");
 
       // Make API call to update user details
-      const response = await axios.post("http://localhost:5001/api/auth/completeRegistration", {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/completeRegistration`, {
         userId,
         name: formData.name,
         email: formData.email,

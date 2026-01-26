@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { TextField, Button, CircularProgress } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from '../config/api';
 
 const SellLand = () => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const SellLand = () => {
 
       
       await axios.post(
-        "http://localhost:5001/api/messages/create",
+        `${API_BASE_URL}/api/messages/create`,
         form,
         { headers: { Authorization: `Bearer ${token}` } }
       );

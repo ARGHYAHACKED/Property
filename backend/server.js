@@ -67,10 +67,9 @@ app.use('/api/auth', authRoutes); // Auth-related routes
 app.use('/api/properties', propertyRoutes); // Property routes
 app.use('/api/lands', landRoutes); // Land routes
 app.use('/api/admin', adminRoutes); // Admin routes
-// Routes
 app.use("/api/messages", messageRoutes);  
-// app.use('/api/land-request', RequestRoutes );
-// app.use('/api/land-request', requestLandRoutes);
+app.use('/api/land-request', requestLandRoutes); // Land request routes
+app.use('/api/request', RequestRoutes); // Additional request routes
 
 // Start server
 const PORT = process.env.PORT || 5001;

@@ -3,8 +3,8 @@ const {
     addProperty,
     getAllProperties,
     getPropertyById,
-    // updateLand,
     deleteProperty,
+    getFilterOptions,
 } = require('../controllers/propertyController');
 const { authenticate } = require('../middlewares/authMiddleware');
 const upload = require('../config/multer'); // For file uploads
@@ -12,23 +12,19 @@ const { verifyAdmin } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
-// Create a land (protected route)
-// router.post('/', upload.single('image'), addLand);
+// Create a property (protected route)
 router.post('/', upload.array('images', 10), addProperty); // Allow up to 10 images
 
-
-// Get all lands
+// Get all properties
 router.get('/', getAllProperties);
 
+// Get filter options (locations, area ranges, price ranges)
+router.get('/filters', getFilterOptions);
 
-
-// Get a land by ID
+// Get a property by ID
 router.get('/:id', getPropertyById);
 
-// // Update a land (protected route)
-// router.put('/:id', authenticate, updateLand);
-
-// // Delete a land (protected route)
+// Delete a property (protected route)
 router.delete('/:id', deleteProperty);
 
 module.exports = router;

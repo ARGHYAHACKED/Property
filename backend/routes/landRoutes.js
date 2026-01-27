@@ -5,6 +5,7 @@ const {
     getLandById,
     updateLand,
     deleteLand,
+    getFilterOptions,
 } = require('../controllers/landController');
 const { authenticate } = require('../middlewares/authMiddleware');
 const upload = require('../config/multer'); // For file uploads
@@ -13,14 +14,13 @@ const { verifyAdmin } = require('../middlewares/authMiddleware');
 const router = express.Router();
 
 // Create a land (protected route)
-// router.post('/', upload.single('image'), addLand);
 router.post('/', upload.array('images', 10), addLand); // Allow up to 10 images
-
 
 // Get all lands
 router.get('/', getAllLands);
 
-
+// Get filter options (locations, area ranges, price ranges)
+router.get('/filters', getFilterOptions);
 
 // Get a land by ID
 router.get('/:id', getLandById);

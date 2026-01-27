@@ -109,6 +109,85 @@ exports.deleteLand = async (req, res) => {
     }
 };
 
+// Get filter options (locations, area ranges, price ranges)
+exports.getFilterOptions = async (req, res) => {
+    try {
+        const lands = await Land.find({}, 'location area price');
+
+        if (!lands || lands.length === 0) {
+            return res.json({
+                locations: [],
+                areaRanges: [],
+                priceRanges: []
+            });
+        }
+
+        // Extract unique locations
+        const locationsSet = new Set(lands.map(l => l.location).filter(l => l));
+        const locations = Array.from(locationsSet).sort();
+
+        // Parse areas and get min/max
+        const areaValues = lands
+            .map(l => {
+                // Convert area string to number (e.g., "50 acres" or "2000 sq ft" -> number)
+                const num = parseFloat(l.area);
+                return isNaN(num) ? 0 : num;
+            })
+            .filter(a => a > 0);
+
+        // Define smart area ranges
+        const areaRanges = [
+            { label: "0 - 5 acres", min: 0, max: 5 },
+            { label: "5 - 10 acres", min: 5, max: 10 },
+            { label: "10 - 20 acres", min: 10, max: 20 },
+            { label: "20 - 55 acres", min: 20, max: 55 },
+            { label: "55+ acres", min: 55, max: Infinity }
+        ];
+
+        // Get min and max prices
+        const prices = lands
+            .map(l => l.price)
+            .filter(p => p > 0)
+            .sort((a, b) => a - b);
+
+        let priceRanges = [];
+        if (prices.length > 0) {
+            const minPrice = prices[0];
+            const maxPrice = prices[prices.length - 1];
+
+            // Generate dynamic price ranges
+            const priceStep = Math.ceil((maxPrice - minPrice) / 5);
+            
+            for (let i = 0; i < 5; i++) {
+                const rangeMin = minPrice + (i * priceStep);
+                const rangeMax = i === 4 ? maxPrice : minPrice + ((i + 1) * priceStep);
+                
+                const minLakh = Math.floor(rangeMin / 100000);
+                const maxLakh = Math.ceil(rangeMax / 100000);
+                
+                const label = minLakh === maxLakh 
+                    ? `₹${minLakh}L+`
+                    : `₹${minLakh}L - ₹${maxLakh}L`;
+                
+                priceRanges.push({
+                    label,
+                    min: rangeMin,
+                    max: rangeMax
+                });
+            }
+        }
+
+        res.json({
+            locations,
+            areaRanges,
+            priceRanges
+        });
+    } catch (error) {
+        console.error('Error in getFilterOptions:', error.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
 
 
 

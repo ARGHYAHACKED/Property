@@ -14,7 +14,13 @@ import API_BASE_URL from '../config/api';
 const Land = () => {
   const [lands, setLands] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
-  const [selectedSizes, setSelectedSizes] = useState([]);
+  const [selectedAreas, setSelectedAreas] = useState([]);
+  const [selectedPrices, setSelectedPrices] = useState([]);
+  const [availableLocations, setAvailableLocations] = useState([]);
+  const [areaRanges, setAreaRanges] = useState([]);
+  const [priceRanges, setPriceRanges] = useState([]);
+  const [showMoreAreas, setShowMoreAreas] = useState(false);
+  const [showMorePrices, setShowMorePrices] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchCode, setSearchCode] = useState("");
   const [isSelling, setIsSelling] = useState(false);
@@ -34,6 +40,21 @@ const Land = () => {
     fetchLands();
   }, []);
 
+  // Fetch filter options
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/lands/filters`);
+        setAvailableLocations(response.data.locations);
+        setAreaRanges(response.data.areaRanges);
+        setPriceRanges(response.data.priceRanges);
+      } catch (error) {
+        console.error("Error fetching filter options:", error);
+      }
+    };
+    fetchFilterOptions();
+  }, []);
+
   const handleLocationChange = (e) => {
     const { value, checked } = e.target;
     setSelectedLocations((prev) =>
@@ -41,11 +62,24 @@ const Land = () => {
     );
   };
 
-  const handleSizeChange = (e) => {
+  const handleAreaChange = (e) => {
     const { value, checked } = e.target;
-    setSelectedSizes((prev) =>
-      checked ? [...prev, value] : prev.filter((size) => size !== value)
-    );
+    const selectedRange = areaRanges.find((range) => range.label === value);
+    if (selectedRange) {
+      setSelectedAreas((prev) =>
+        checked ? [...prev, selectedRange] : prev.filter((area) => area.label !== value)
+      );
+    }
+  };
+
+  const handlePriceChange = (e) => {
+    const { value, checked } = e.target;
+    const selectedRange = priceRanges.find((range) => range.label === value);
+    if (selectedRange) {
+      setSelectedPrices((prev) =>
+        checked ? [...prev, selectedRange] : prev.filter((price) => price.label !== value)
+      );
+    }
   };
 
   const handleSearchChange = (e) => {
@@ -63,6 +97,15 @@ const Land = () => {
       alert("Land added successfully!");
       setIsSelling(false);
       setSellData({ title: "", description: "", price: "", location: "", area: "" });
+      
+      // Refresh lands and filter options
+      const landsResponse = await axios.get(`${API_BASE_URL}/api/lands`);
+      setLands(landsResponse.data);
+      
+      const filterResponse = await axios.get(`${API_BASE_URL}/api/lands/filters`);
+      setAvailableLocations(filterResponse.data.locations);
+      setAreaRanges(filterResponse.data.areaRanges);
+      setPriceRanges(filterResponse.data.priceRanges);
     } catch (error) {
       console.error("Error adding land:", error);
       alert("Failed to add land. Please try again.");
@@ -73,13 +116,21 @@ const Land = () => {
     const codeMatch = searchCode
       ? land.title.toLowerCase().includes(searchCode.toLowerCase())
       : true;
-    const locationMatch = selectedLocations.length
-      ? selectedLocations.includes(land.location)
-      : true;
-    const sizeMatch = selectedSizes.length
-      ? selectedSizes.includes(land.area)
-      : true;
-    return codeMatch && locationMatch && sizeMatch;
+    
+    const locationMatch = selectedLocations.length === 0
+      ? true
+      : selectedLocations.includes(land.location);
+    
+    const areaMatch = selectedAreas.length === 0 ? true : selectedAreas.some(selectedRange => {
+      const landAreaNum = parseFloat(land.area);
+      return landAreaNum >= selectedRange.min && landAreaNum <= selectedRange.max;
+    });
+    
+    const priceMatch = selectedPrices.length === 0 ? true : selectedPrices.some(selectedRange => {
+      return land.price >= selectedRange.min && land.price <= selectedRange.max;
+    });
+    
+    return codeMatch && locationMatch && areaMatch && priceMatch;
   });
 
   const handleLandClick = (land) => {
@@ -110,33 +161,81 @@ const Land = () => {
         {/* Filter Section */}
         <div
           className={`lg:block ${isFilterOpen ? "block" : "hidden"
-            } absolute lg:relative z-10 bg-white shadow-lg p-4 rounded-lg lg:w-1/4 w-64`}
+            } absolute lg:relative z-10 bg-white shadow-lg p-4 rounded-lg lg:w-1/4 w-64 max-h-screen overflow-y-auto`}
         >
-          <h4 className="font-bold mb-2">Location</h4>
-          {["Jaipur", "Pune", "Bangalore"].map((loc) => (
-            <label key={loc} className="block">
-              <input
-                type="checkbox"
-                value={loc}
-                onChange={handleLocationChange}
-                className="mr-2"
-              />
-              {loc}
-            </label>
-          ))}
+          {/* Location Filter */}
+          <h4 className="font-bold mb-3 text-lg">Location</h4>
+          {availableLocations.length > 0 ? (
+            availableLocations.map((loc) => (
+              <label key={loc} className="block mb-2">
+                <input
+                  type="checkbox"
+                  value={loc}
+                  onChange={handleLocationChange}
+                  className="mr-2"
+                />
+                {loc}
+              </label>
+            ))
+          ) : (
+            <p className="text-gray-500 text-sm">No locations available</p>
+          )}
 
-          <h4 className="font-bold mt-4 mb-2">Size</h4>
-          {["5 acres", "2,000 sq ft", "10,000 sq ft"].map((size) => (
-            <label key={size} className="block">
-              <input
-                type="checkbox"
-                value={size}
-                onChange={handleSizeChange}
-                className="mr-2"
-              />
-              {size}
-            </label>
-          ))}
+          {/* Area Range Filter */}
+          <h4 className="font-bold mt-4 mb-3 text-lg">Area</h4>
+          {areaRanges.length > 0 ? (
+            <>
+              {areaRanges.slice(0, showMoreAreas ? areaRanges.length : 5).map((range) => (
+                <label key={range.label} className="block mb-2">
+                  <input
+                    type="checkbox"
+                    value={range.label}
+                    onChange={handleAreaChange}
+                    className="mr-2"
+                  />
+                  {range.label}
+                </label>
+              ))}
+              {areaRanges.length > 5 && (
+                <button
+                  onClick={() => setShowMoreAreas(!showMoreAreas)}
+                  className="text-blue-600 hover:text-blue-800 text-sm font-semibold mt-2"
+                >
+                  {showMoreAreas ? "Show Less" : "Show More"}
+                </button>
+              )}
+            </>
+          ) : (
+            <p className="text-gray-500 text-sm">No areas available</p>
+          )}
+
+          {/* Price Range Filter */}
+          <h4 className="font-bold mt-4 mb-3 text-lg">Price</h4>
+          {priceRanges.length > 0 ? (
+            <>
+              {priceRanges.slice(0, showMorePrices ? priceRanges.length : 5).map((range) => (
+                <label key={range.label} className="block mb-2">
+                  <input
+                    type="checkbox"
+                    value={range.label}
+                    onChange={handlePriceChange}
+                    className="mr-2"
+                  />
+                  {range.label}
+                </label>
+              ))}
+              {priceRanges.length > 5 && (
+                <button
+                  onClick={() => setShowMorePrices(!showMorePrices)}
+                  className="text-blue-600 hover:text-blue-800 text-sm font-semibold mt-2"
+                >
+                  {showMorePrices ? "Show Less" : "Show More"}
+                </button>
+              )}
+            </>
+          ) : (
+            <p className="text-gray-500 text-sm">No price ranges available</p>
+          )}
         </div>
 
         {/* Land Cards Section */}

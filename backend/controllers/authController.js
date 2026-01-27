@@ -18,23 +18,50 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'Phone number is required' });
         }
 
+        // Validate Twilio configuration
+        if (!accountSid || !authToken || !process.env.TWILIO_PHONE_NUMBER) {
+            console.error('Twilio configuration missing:', {
+                accountSid: !!accountSid,
+                authToken: !!authToken,
+                twilioPhoneNumber: !!process.env.TWILIO_PHONE_NUMBER
+            });
+            return res.status(500).json({ error: 'SMS service not configured' });
+        }
+
         // Generate OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
         // Save OTP to database
         await OTP.findOneAndUpdate({ phone }, { otp }, { upsert: true });
 
-        // Send OTP via Twilio
-        await client.messages.create({
-            body: `Your OTP is ${otp}`,
-            from: process.env.TWILIO_PHONE_NUMBER,
-            to: phone,
-        });
-
-        res.status(200).json({ message: 'OTP sent successfully', phone });
+        // Send OTP via Twilio with better error handling
+        try {
+            await client.messages.create({
+                body: `Your OTP is ${otp}`,
+                from: process.env.TWILIO_PHONE_NUMBER,
+                to: phone,
+            });
+            
+            res.status(200).json({ message: 'OTP sent successfully', phone });
+        } catch (twilioError) {
+            console.error('Twilio error:', {
+                message: twilioError.message,
+                code: twilioError.code,
+                status: twilioError.status
+            });
+            
+            // Check if it's a phone number format issue
+            if (twilioError.message && twilioError.message.includes('invalid')) {
+                return res.status(400).json({ 
+                    error: 'Invalid phone number format. Use +country_codephonenumber (e.g., +919876543210)' 
+                });
+            }
+            
+            return res.status(500).json({ error: 'Failed to send OTP. Please try again.' });
+        }
     } catch (error) {
+        console.error('Error in register:', error.message);
         res.status(500).json({ error: 'Server error' });
-        console.log(error.message)
     }
 };
 
@@ -156,17 +183,50 @@ exports.login = async (req, res) => {
         if (!phone) {
             return res.status(400).json({ message: 'Phone number is required' });
         }
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        await OTP.findOneAndUpdate({ phone }, { otp }, { upsert: true });
-        await client.messages.create({
-            body: `Your OTP for login is ${otp}`,
-            from: process.env.TWILIO_PHONE_NUMBER,
-            to: phone,
-        });
 
-        res.status(200).json({ message: 'OTP sent successfully', phone });
+        // Validate Twilio configuration
+        if (!accountSid || !authToken || !process.env.TWILIO_PHONE_NUMBER) {
+            console.error('Twilio configuration missing:', {
+                accountSid: !!accountSid,
+                authToken: !!authToken,
+                twilioPhoneNumber: !!process.env.TWILIO_PHONE_NUMBER
+            });
+            return res.status(500).json({ error: 'SMS service not configured' });
+        }
+
+        // Generate OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        // Save OTP to database
+        await OTP.findOneAndUpdate({ phone }, { otp }, { upsert: true });
+        
+        // Send OTP via Twilio with better error handling
+        try {
+            await client.messages.create({
+                body: `Your OTP for login is ${otp}`,
+                from: process.env.TWILIO_PHONE_NUMBER,
+                to: phone,
+            });
+            
+            res.status(200).json({ message: 'OTP sent successfully', phone });
+        } catch (twilioError) {
+            console.error('Twilio error:', {
+                message: twilioError.message,
+                code: twilioError.code,
+                status: twilioError.status
+            });
+            
+            // Check if it's a phone number format issue
+            if (twilioError.message && twilioError.message.includes('invalid')) {
+                return res.status(400).json({ 
+                    error: 'Invalid phone number format. Use +country_codephonenumber (e.g., +919876543210)' 
+                });
+            }
+            
+            return res.status(500).json({ error: 'Failed to send OTP. Please try again.' });
+        }
     } catch (error) {
-        console.error('Error in loginGenerateOtp:', error.message);
+        console.error('Error in login:', error.message);
         res.status(500).json({ error: 'Server error' });
     }
 };

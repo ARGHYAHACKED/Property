@@ -112,28 +112,36 @@ exports.deleteLand = async (req, res) => {
 // Get filter options (locations, area ranges, price ranges)
 exports.getFilterOptions = async (req, res) => {
     try {
+        console.log('Fetching lands for filters...');
         const lands = await Land.find({}, 'location area price');
+        console.log(`Found ${lands.length} lands for filters`);
 
         if (!lands || lands.length === 0) {
+            console.log('No lands found, returning empty filters');
             return res.json({
                 locations: [],
-                areaRanges: [],
+                areaRanges: [
+                    { label: "0 - 5 acres", min: 0, max: 5 },
+                    { label: "5 - 10 acres", min: 5, max: 10 },
+                    { label: "10 - 20 acres", min: 10, max: 20 },
+                    { label: "20 - 55 acres", min: 20, max: 55 },
+                    { label: "55+ acres", min: 55, max: Infinity }
+                ],
                 priceRanges: []
             });
         }
 
-        // Extract unique locations
-        const locationsSet = new Set(lands.map(l => l.location).filter(l => l));
+        // Extract unique locations with null checking
+        const locationsSet = new Set(
+            lands
+                .map(l => {
+                    if (!l || !l.location) return null;
+                    return l.location.trim();
+                })
+                .filter(l => l && l.length > 0)
+        );
         const locations = Array.from(locationsSet).sort();
-
-        // Parse areas and get min/max
-        const areaValues = lands
-            .map(l => {
-                // Convert area string to number (e.g., "50 acres" or "2000 sq ft" -> number)
-                const num = parseFloat(l.area);
-                return isNaN(num) ? 0 : num;
-            })
-            .filter(a => a > 0);
+        console.log('Extracted locations:', locations);
 
         // Define smart area ranges
         const areaRanges = [
@@ -144,47 +152,79 @@ exports.getFilterOptions = async (req, res) => {
             { label: "55+ acres", min: 55, max: Infinity }
         ];
 
-        // Get min and max prices
+        // Get min and max prices with better error handling
         const prices = lands
-            .map(l => l.price)
+            .map(l => {
+                if (!l || typeof l.price !== 'number') return 0;
+                return l.price > 0 ? l.price : 0;
+            })
             .filter(p => p > 0)
             .sort((a, b) => a - b);
 
+        console.log(`Found ${prices.length} prices for filtering`);
+
         let priceRanges = [];
         if (prices.length > 0) {
-            const minPrice = prices[0];
-            const maxPrice = prices[prices.length - 1];
+            try {
+                const minPrice = prices[0];
+                const maxPrice = prices[prices.length - 1];
+                console.log(`Price range: ${minPrice} to ${maxPrice}`);
 
-            // Generate dynamic price ranges
-            const priceStep = Math.ceil((maxPrice - minPrice) / 5);
-            
-            for (let i = 0; i < 5; i++) {
-                const rangeMin = minPrice + (i * priceStep);
-                const rangeMax = i === 4 ? maxPrice : minPrice + ((i + 1) * priceStep);
-                
-                const minLakh = Math.floor(rangeMin / 100000);
-                const maxLakh = Math.ceil(rangeMax / 100000);
-                
-                const label = minLakh === maxLakh 
-                    ? `₹${minLakh}L+`
-                    : `₹${minLakh}L - ₹${maxLakh}L`;
-                
-                priceRanges.push({
-                    label,
-                    min: rangeMin,
-                    max: rangeMax
-                });
+                // If min and max are the same, create a single range
+                if (minPrice === maxPrice) {
+                    const lakh = Math.ceil(maxPrice / 100000);
+                    priceRanges = [
+                        { label: `₹${lakh}L+`, min: minPrice, max: maxPrice }
+                    ];
+                } else {
+                    // Generate dynamic price ranges
+                    const priceStep = Math.max(1, Math.ceil((maxPrice - minPrice) / 5));
+                    
+                    for (let i = 0; i < 5; i++) {
+                        const rangeMin = minPrice + (i * priceStep);
+                        const rangeMax = i === 4 ? maxPrice : minPrice + ((i + 1) * priceStep);
+                        
+                        const minLakh = Math.floor(rangeMin / 100000);
+                        const maxLakh = Math.ceil(rangeMax / 100000);
+                        
+                        const label = minLakh === maxLakh 
+                            ? `₹${minLakh}L+`
+                            : `₹${minLakh}L - ₹${maxLakh}L`;
+                        
+                        priceRanges.push({
+                            label,
+                            min: rangeMin,
+                            max: rangeMax
+                        });
+                    }
+                }
+                console.log('Generated price ranges:', priceRanges.length);
+            } catch (priceError) {
+                console.error('Error calculating price ranges:', priceError.message);
+                priceRanges = [];
             }
         }
 
-        res.json({
+        const response = {
             locations,
             areaRanges,
             priceRanges
+        };
+        
+        console.log('Sending filter response:', {
+            locationsCount: locations.length,
+            areaRangesCount: areaRanges.length,
+            priceRangesCount: priceRanges.length
         });
+
+        res.json(response);
     } catch (error) {
-        console.error('Error in getFilterOptions:', error.message);
-        res.status(500).json({ error: 'Server error' });
+        console.error('Error in getFilterOptions:', error);
+        console.error('Error stack:', error.stack);
+        res.status(500).json({ 
+            error: 'Server error fetching filter options',
+            message: error.message 
+        });
     }
 };
 

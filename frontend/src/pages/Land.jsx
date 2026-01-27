@@ -44,12 +44,35 @@ const Land = () => {
   useEffect(() => {
     const fetchFilterOptions = async () => {
       try {
+        console.log('Fetching filter options from:', `${API_BASE_URL}/api/lands/filters`);
         const response = await axios.get(`${API_BASE_URL}/api/lands/filters`);
-        setAvailableLocations(response.data.locations);
-        setAreaRanges(response.data.areaRanges);
-        setPriceRanges(response.data.priceRanges);
+        console.log('Filter options received:', response.data);
+        
+        if (response.data) {
+          setAvailableLocations(response.data.locations || []);
+          setAreaRanges(response.data.areaRanges || [
+            { label: "0 - 5 acres", min: 0, max: 5 },
+            { label: "5 - 10 acres", min: 5, max: 10 },
+            { label: "10 - 20 acres", min: 10, max: 20 },
+            { label: "20 - 55 acres", min: 20, max: 55 },
+            { label: "55+ acres", min: 55, max: Infinity }
+          ]);
+          setPriceRanges(response.data.priceRanges || []);
+        }
       } catch (error) {
         console.error("Error fetching filter options:", error);
+        console.error("Error details:", error.response?.data || error.message);
+        
+        // Set fallback values on error
+        setAvailableLocations([]);
+        setAreaRanges([
+          { label: "0 - 5 acres", min: 0, max: 5 },
+          { label: "5 - 10 acres", min: 5, max: 10 },
+          { label: "10 - 20 acres", min: 10, max: 20 },
+          { label: "20 - 55 acres", min: 20, max: 55 },
+          { label: "55+ acres", min: 55, max: Infinity }
+        ]);
+        setPriceRanges([]);
       }
     };
     fetchFilterOptions();

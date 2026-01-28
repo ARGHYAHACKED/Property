@@ -1,28 +1,6 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 require('dotenv').config();
-
-// Safe parsing - handle both JSON array and comma-separated formats
-let adminEmails = [];
-try {
-    if (process.env.ADMIN_EMAILS.startsWith('[')) {
-        adminEmails = JSON.parse(process.env.ADMIN_EMAILS);
-    } else {
-        adminEmails = process.env.ADMIN_EMAILS.split(',').map(email => email.trim());
-    }
-} catch (e) {
-    console.warn('Could not parse ADMIN_EMAILS, defaulting to empty array');
-    adminEmails = [];
-}
-
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
-
-console.log('Admin Emails loaded:', adminEmails); // Debug log
-console.log('Password hash loaded:', !!ADMIN_PASSWORD_HASH); // Debug log
-
-if (!ADMIN_PASSWORD_HASH) {
-    throw new Error("ADMIN_PASSWORD_HASH missing in .env");
-}
+const Admin = require('../models/adminModel');
 
 exports.login = async (req, res) => {
     try {
@@ -33,26 +11,25 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: "Email and password are required" });
         }
 
-        // Debug logs
         console.log('Login attempt for email:', email);
-        console.log('Available admin emails:', adminEmails);
 
-        // Check if email is in admin list
-        if (!adminEmails.includes(email)) {
+        // Find admin in database
+        const admin = await Admin.findOne({ email: email.toLowerCase() });
+        
+        if (!admin) {
             console.log(`Failed login attempt with invalid email: ${email}`);
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        // Verify password
-        const isMatch = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
-        if (!isMatch) {
+        // Direct password comparison (no hash)
+        if (admin.password !== password) {
             console.log(`Failed login attempt with wrong password for: ${email}`);
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
         // Generate JWT token
         const token = jwt.sign(
-            { email },
+            { email: admin.email, adminId: admin._id },
             process.env.JWT_SECRET,
             { expiresIn: "24h" }
         );
@@ -60,15 +37,16 @@ exports.login = async (req, res) => {
         // Set secure cookie
         res.cookie("adminToken", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Only secure in production
+            secure: process.env.NODE_ENV === 'production',
             sameSite: "lax",
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
 
         console.log(`Admin login successful for: ${email}`);
-        res.status(200).json({
+        res.status(200).json({ 
             message: "Login successful",
-            email: email
+            email: admin.email,
+            name: admin.name
         });
     } catch (error) {
         console.error('Error during admin login:', error);
@@ -86,6 +64,56 @@ exports.dashboard = (req, res) => {
         });
     } catch (error) {
         console.error('Error accessing dashboard:', error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+// New endpoint: Create admin user (for setup)
+exports.createAdmin = async (req, res) => {
+    try {
+        const { email, password, name } = req.body;
+
+        // Validate inputs
+        if (!email || !password) {
+            return res.status(400).json({ message: "Email and password are required" });
+        }
+
+        // Check if admin already exists
+        const existingAdmin = await Admin.findOne({ email: email.toLowerCase() });
+        if (existingAdmin) {
+            return res.status(400).json({ message: "Admin with this email already exists" });
+        }
+
+        // Create new admin (NO HASHING - PLAIN TEXT)
+        const newAdmin = new Admin({
+            email: email.toLowerCase(),
+            password: password, // Store plain text password
+            name: name || 'Admin'
+        });
+
+        await newAdmin.save();
+
+        console.log(`New admin created: ${email}`);
+        res.status(201).json({ 
+            message: "Admin created successfully",
+            admin: {
+                email: newAdmin.email,
+                name: newAdmin.name
+            }
+        });
+    } catch (error) {
+        console.error('Error creating admin:', error);
+        res.status(500).json({ message: "Server error while creating admin" });
+    }
+};
+
+// Endpoint: Get all admins (for verification)
+exports.getAllAdmins = async (req, res) => {
+    try {
+        const admins = await Admin.find({}, { password: 0 }); // Don't show passwords
+        res.status(200).json(admins);
+    } catch (error) {
+        console.error('Error fetching admins:', error);
         res.status(500).json({ message: "Server error" });
     }
 };

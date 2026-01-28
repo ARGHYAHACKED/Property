@@ -45,6 +45,7 @@ exports.login = async (req, res) => {
         console.log(`Admin login successful for: ${email}`);
         res.status(200).json({ 
             message: "Login successful",
+            token: token, // Send token in response
             email: admin.email,
             name: admin.name
         });

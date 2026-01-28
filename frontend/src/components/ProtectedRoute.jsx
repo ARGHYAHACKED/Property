@@ -10,13 +10,21 @@ const ProtectedRoute = ({ children }) => {
   useEffect(() => {
     const verifyAdminToken = async () => {
       try {
+        // Get token from localStorage
+        const token = localStorage.getItem('adminToken');
+        
         console.log('Verifying admin token with API:', API_BASE_URL);
+        console.log('Token from localStorage:', token ? 'YES' : 'NO');
+
         const response = await axios.get(`${API_BASE_URL}/api/admin/dashboard`, {
           withCredentials: true,
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            // Send token in Authorization header as fallback
+            ...(token && { 'Authorization': `Bearer ${token}` })
           }
         });
+        
         console.log('Admin authenticated successfully');
         setIsAuthenticated(true);
       } catch (error) {

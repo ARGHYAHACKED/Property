@@ -26,11 +26,17 @@ const AdminLogin = () => {
 
       // If login is successful (status code 200), redirect to dashboard
       if (response.status === 200) {
+        // Store token in localStorage as fallback
+        if (response.data.token) {
+          localStorage.setItem('adminToken', response.data.token);
+        }
+        console.log('Login successful, redirecting to dashboard');
         navigate('/admin/dashboard');  // Navigate to the dashboard
       }
     } catch (err) {
       // Handle errors (invalid email/password)
       setError(err.response?.data?.message || 'Invalid email or password');
+      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }

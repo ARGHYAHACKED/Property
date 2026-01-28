@@ -21,7 +21,17 @@ exports.authenticate = async (req, res, next) => {
 };
 
 exports.verifyAdmin = (req, res, next) => {
-    const token = req.cookies.adminToken;
+    // Try to get token from cookies first
+    let token = req.cookies.adminToken;
+    
+    // If not in cookies, try Authorization header
+    if (!token && req.headers.authorization) {
+        token = req.headers.authorization.replace('Bearer ', '');
+    }
+    
+    console.log('Admin token from cookies:', req.cookies.adminToken ? 'YES' : 'NO');
+    console.log('Admin token from header:', req.headers.authorization ? 'YES' : 'NO');
+    console.log('Token found:', token ? 'YES' : 'NO');
     
     if (!token) {
         return res.status(401).json({ message: "Access denied. No admin token provided. Please login first." });
@@ -30,6 +40,7 @@ exports.verifyAdmin = (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.admin = decoded; // Add the admin payload to the request object
+        console.log('Token verified successfully for:', decoded.email);
         next();
     } catch (err) {
         console.error('Token verification error:', err.message);

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
-const Cookies = require('js-cookie');
+require('dotenv').config();
 
 exports.authenticate = async (req, res, next) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -20,30 +20,22 @@ exports.authenticate = async (req, res, next) => {
     }
 };
 
-
-
-require('dotenv').config();
-
 exports.verifyAdmin = (req, res, next) => {
     const token = req.cookies.adminToken;
-    console.log(token)
-
-
-    // if (!token) {
-    //     return res.status(401).json({ message: "Access denied. No token provided." });
-    // }
+    
+    if (!token) {
+        return res.status(401).json({ message: "Access denied. No admin token provided. Please login first." });
+    }
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.admin = decoded; // Add the admin payload to the request object
         next();
     } catch (err) {
-        res.status(400).json({ message: "Invalid token" });
+        console.error('Token verification error:', err.message);
+        res.status(401).json({ message: "Invalid or expired token. Please login again." });
     }
 };
-
-
-
 
 exports.authMiddleware = (req, res, next) => {
   const token2 = req.cookies.token; // Get token from cookies

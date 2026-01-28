@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import AddProperty from "./pages/AddProperty";
 import PropertyDetails from "./pages/PropertyDetails";
@@ -29,7 +30,7 @@ const App = () => {
     setIsLoggedIn(false);
   };
 
-  const ProtectedRoute = ({ children }) => {
+  const UserProtectedRoute = ({ children }) => {
     const token = localStorage.getItem("token");
     return token ? children : <Navigate to="/login" />;
   };
@@ -52,14 +53,21 @@ const App = () => {
             <Route
               path="/profile"
               element={
-                
+                <UserProtectedRoute>
                   <Profile onLogout={handleLogout} />
-                
+                </UserProtectedRoute>
               }
             />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/sell" element={<SellLand />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route 
+              path="/admin/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
           </Routes>
         </div>
         <Footer />

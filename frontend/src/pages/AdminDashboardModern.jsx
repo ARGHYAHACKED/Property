@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../config/api';
 import {
-  LogOut, Users, Home, Landmark, MessageSquare, BarChart3,
+  LogOut, Users, Home, Land, MessageSquare, BarChart3,
   Search, ChevronDown, Eye, Trash2, Edit, Plus
 } from 'lucide-react';
 
@@ -116,7 +116,7 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard title="Total Users" value={stats.totalUsers} icon={Users} color="border-blue-500 text-blue-500" />
           <StatCard title="Total Properties" value={stats.totalProperties} icon={Home} color="border-green-500 text-green-500" />
-          <StatCard title="Total Lands" value={stats.totalLands} icon={Landmark} color="border-yellow-500 text-yellow-500" />
+          <StatCard title="Total Lands" value={stats.totalLands} icon={Land} color="border-yellow-500 text-yellow-500" />
           <StatCard title="Total Messages" value={stats.totalMessages} icon={MessageSquare} color="border-purple-500 text-purple-500" />
         </div>
 
@@ -328,4 +328,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-

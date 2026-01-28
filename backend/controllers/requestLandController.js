@@ -32,3 +32,14 @@ exports.createLandRequest = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+exports.getLandRequests = async (req, res) => {
+  try {
+    const landRequests = await LandRequest.find().populate('userId', 'name email').populate('landId', 'title area price location');
+    res.status(200).json({ data: landRequests });
+  } catch (error) {
+    console.error('Error fetching land requests:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+

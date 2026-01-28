@@ -223,30 +223,58 @@ const AdminDashboard = () => {
               {/* Properties Tab */}
               {activeTab === 'properties' && (
                 <div>
+                  {/* Add Property Button */}
+                  <div className="mb-6">
+                    <button 
+                      onClick={() => navigate('/add-property')}
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                    >
+                      <Plus className="w-5 h-5" />
+                      Add New Property
+                    </button>
+                  </div>
+
+                  {/* Properties Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {data.properties?.map(property => (
-                      <div key={property._id} className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-                        {property.images && property.images[0] && (
-                          <img src={property.images[0]} alt={property.title} className="w-full h-40 object-cover" />
-                        )}
-                        <div className="p-4">
-                          <h3 className="font-bold text-gray-800">{property.title}</h3>
-                          <p className="text-gray-600 text-sm">{property.location}</p>
-                          <p className="text-blue-600 font-bold mt-2">₹ {property.price?.toLocaleString()}</p>
-                          <div className="flex gap-2 mt-4">
-                            <button className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors">
-                              <Eye className="w-4 h-4" /> View
-                            </button>
-                            <button
-                              onClick={() => handleDelete('property', property._id)}
-                              className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" /> Delete
-                            </button>
+                    {data.properties && data.properties.length > 0 ? (
+                      data.properties.map(property => (
+                        <div key={property._id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100">
+                          <div className="relative">
+                            {property.images && property.images[0] && (
+                              <img src={property.images[0]} alt={property.title} className="w-full h-48 object-cover" />
+                            )}
+                            <div className="absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                              Property
+                            </div>
+                          </div>
+                          <div className="p-5">
+                            <h3 className="font-bold text-gray-800 text-lg mb-2">{property.title}</h3>
+                            <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
+                              <Home className="w-4 h-4 text-gray-500" />
+                              {property.location}
+                            </div>
+                            <p className="text-blue-600 font-bold text-xl mb-4">₹ {property.price?.toLocaleString()}</p>
+                            <div className="flex gap-2">
+                              <button className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1 transition-all">
+                                <Eye className="w-4 h-4" /> View
+                              </button>
+                              <button
+                                onClick={() => handleDelete('property', property._id)}
+                                className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1 transition-all"
+                              >
+                                <Trash2 className="w-4 h-4" /> Delete
+                              </button>
+                            </div>
                           </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="col-span-full text-center py-12">
+                        <Home className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-600 text-lg">No properties yet</p>
+                        <p className="text-gray-500 text-sm mt-1">Click "Add New Property" to get started</p>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               )}
@@ -254,31 +282,59 @@ const AdminDashboard = () => {
               {/* Lands Tab */}
               {activeTab === 'lands' && (
                 <div>
+                  {/* Add Land Button */}
+                  <div className="mb-6">
+                    <button 
+                      onClick={() => navigate('/sell-land')}
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                    >
+                      <Plus className="w-5 h-5" />
+                      Add New Land
+                    </button>
+                  </div>
+
+                  {/* Lands Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {data.lands?.map(land => (
-                      <div key={land._id} className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-                        {land.images && land.images[0] && (
-                          <img src={land.images[0]} alt={land.title} className="w-full h-40 object-cover" />
-                        )}
-                        <div className="p-4">
-                          <h3 className="font-bold text-gray-800">{land.title}</h3>
-                          <p className="text-gray-600 text-sm">{land.location}</p>
-                          <p className="text-blue-600 font-bold mt-2">₹ {land.price?.toLocaleString()}</p>
-                          <p className="text-gray-700 text-sm mt-1">{land.area} acres</p>
-                          <div className="flex gap-2 mt-4">
-                            <button className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors">
-                              <Eye className="w-4 h-4" /> View
-                            </button>
-                            <button
-                              onClick={() => handleDelete('land', land._id)}
-                              className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded text-sm flex items-center justify-center gap-1 transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" /> Delete
-                            </button>
+                    {data.lands && data.lands.length > 0 ? (
+                      data.lands.map(land => (
+                        <div key={land._id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100">
+                          <div className="relative">
+                            {land.images && land.images[0] && (
+                              <img src={land.images[0]} alt={land.title} className="w-full h-48 object-cover" />
+                            )}
+                            <div className="absolute top-3 right-3 bg-yellow-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                              Land
+                            </div>
+                          </div>
+                          <div className="p-5">
+                            <h3 className="font-bold text-gray-800 text-lg mb-2">{land.title}</h3>
+                            <div className="flex items-center gap-2 text-gray-600 text-sm mb-2">
+                              <Landmark className="w-4 h-4 text-gray-500" />
+                              {land.location}
+                            </div>
+                            <p className="text-gray-700 text-sm font-medium mb-3">📐 {land.area} acres</p>
+                            <p className="text-yellow-600 font-bold text-xl mb-4">₹ {land.price?.toLocaleString()}</p>
+                            <div className="flex gap-2">
+                              <button className="flex-1 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1 transition-all">
+                                <Eye className="w-4 h-4" /> View
+                              </button>
+                              <button
+                                onClick={() => handleDelete('land', land._id)}
+                                className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1 transition-all"
+                              >
+                                <Trash2 className="w-4 h-4" /> Delete
+                              </button>
+                            </div>
                           </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="col-span-full text-center py-12">
+                        <Landmark className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-600 text-lg">No lands yet</p>
+                        <p className="text-gray-500 text-sm mt-1">Click "Add New Land" to get started</p>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               )}

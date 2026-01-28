@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../config/api';
-import { Upload, X, Plus } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
 
-const AddProperty = () => {
+const AddLand = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     location: '',
-    age: '',
     area: '',
     price: '',
     amenities: ''
@@ -75,28 +74,28 @@ const AddProperty = () => {
       };
 
       const response = await axios.post(
-        `${API_BASE_URL}/api/properties`,
+        `${API_BASE_URL}/api/lands`,
         submitData,
         { withCredentials: true }
       );
 
-      alert('Property added successfully!');
+      alert('Land listing added successfully!');
       navigate('/admin/dashboard');
     } catch (err) {
       console.error('Error:', err);
-      setError(err.response?.data?.error || 'Failed to add property. Please try again.');
+      setError(err.response?.data?.error || 'Failed to add land listing. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 py-8 px-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">Add New Property</h1>
-          <p className="text-gray-600">Fill in the details below to add a new property listing</p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">Add New Land</h1>
+          <p className="text-gray-600">Fill in the details below to add a new land listing</p>
         </div>
 
         {/* Form */}
@@ -115,8 +114,8 @@ const AddProperty = () => {
               name="title"
               value={formData.title}
               onChange={handleInputChange}
-              placeholder="e.g., Modern Apartment in Downtown"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., Agricultural Land in Bangalore"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
               required
             />
           </div>
@@ -128,9 +127,9 @@ const AddProperty = () => {
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              placeholder="Describe the property in detail..."
+              placeholder="Describe the land in detail..."
               rows="5"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
               required
             />
           </div>
@@ -143,8 +142,8 @@ const AddProperty = () => {
               name="location"
               value={formData.location}
               onChange={handleInputChange}
-              placeholder="e.g., New York, NY"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., Bangalore, Karnataka"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
               required
             />
           </div>
@@ -158,36 +157,24 @@ const AddProperty = () => {
                 name="price"
                 value={formData.price}
                 onChange={handleInputChange}
-                placeholder="e.g., 5000000"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g., 2000000"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Area (sq ft) *</label>
+              <label className="block text-gray-700 font-semibold mb-2">Area (acres) *</label>
               <input
                 type="number"
                 name="area"
                 value={formData.area}
                 onChange={handleInputChange}
-                placeholder="e.g., 1500"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g., 2.5"
+                step="0.1"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 required
               />
             </div>
-          </div>
-
-          {/* Age */}
-          <div className="mb-6">
-            <label className="block text-gray-700 font-semibold mb-2">Property Age</label>
-            <input
-              type="text"
-              name="age"
-              value={formData.age}
-              onChange={handleInputChange}
-              placeholder="e.g., 5 years"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
           </div>
 
           {/* Amenities */}
@@ -197,16 +184,16 @@ const AddProperty = () => {
               name="amenities"
               value={formData.amenities}
               onChange={handleInputChange}
-              placeholder="e.g., Swimming Pool, Gym, Parking, Security"
+              placeholder="e.g., Water Supply, Road Access, Electricity, Near School"
               rows="3"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
             />
           </div>
 
           {/* Image Upload */}
           <div className="mb-6">
             <label className="block text-gray-700 font-semibold mb-2">Images (up to 10) *</label>
-            <div className="border-2 border-dashed border-blue-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition">
+            <div className="border-2 border-dashed border-yellow-300 rounded-lg p-6 text-center cursor-pointer hover:border-yellow-500 transition">
               <input
                 type="file"
                 multiple
@@ -216,7 +203,7 @@ const AddProperty = () => {
                 id="image-input"
               />
               <label htmlFor="image-input" className="cursor-pointer">
-                <Upload className="w-12 h-12 mx-auto text-blue-500 mb-2" />
+                <Upload className="w-12 h-12 mx-auto text-yellow-500 mb-2" />
                 <p className="text-gray-700 font-medium">Click to upload or drag and drop</p>
                 <p className="text-gray-500 text-sm">PNG, JPG, GIF up to 10MB</p>
               </label>
@@ -253,9 +240,9 @@ const AddProperty = () => {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-lg transition-all disabled:opacity-50"
+              className="flex-1 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white font-bold py-3 px-6 rounded-lg transition-all disabled:opacity-50"
             >
-              {loading ? 'Adding Property...' : 'Add Property'}
+              {loading ? 'Adding Land...' : 'Add Land'}
             </button>
             <button
               type="button"
@@ -271,4 +258,4 @@ const AddProperty = () => {
   );
 };
 
-export default AddProperty;
+export default AddLand;

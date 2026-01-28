@@ -285,7 +285,7 @@ const AdminDashboard = () => {
                   {/* Add Land Button */}
                   <div className="mb-6">
                     <button 
-                      onClick={() => navigate('/sell-land')}
+                      onClick={() => navigate('/add-land')}
                       className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                     >
                       <Plus className="w-5 h-5" />

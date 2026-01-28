@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import AddProperty from "./pages/AddProperty";
+import AddLand from "./pages/AddLand";
 import PropertyDetails from "./pages/PropertyDetails";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -46,6 +47,7 @@ const App = () => {
             <Route path="/land" element={<Land />} />
             <Route path="/land/:id" element={<LandDetails />} />
             <Route path="/add-property" element={<AddProperty />} />
+            <Route path="/add-land" element={<AddLand />} />
             <Route path="/property-details/:id" element={<PropertyDetails />} />
             <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
             <Route path="/signup" element={<SignUp />} />

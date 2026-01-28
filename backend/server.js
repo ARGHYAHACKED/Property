@@ -31,16 +31,21 @@ const corsOptions = {
   origin: function (origin, callback) {
     // Allowed origins
     const allowedOrigins = [
-      'http://localhost:5173', // Local development
+      'http://localhost:5173', // Local development frontend
       'http://localhost:3000',  // Alternative local development
-      'https://property-0lu6.onrender.com', // Render backend URL
-      process.env.FRONTEND_URL // Environment variable (Vercel, etc)
+      'https://property-0lu6.onrender.com', // Render backend URL (if frontend is on same domain)
+      process.env.FRONTEND_URL, // Environment variable (Vercel frontend)
     ];
 
     // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app')) {
+    if (!origin) {
+      callback(null, true); // Allow requests with no origin
+    } else if (allowedOrigins.includes(origin)) {
       callback(null, true);
+    } else if (origin && origin.includes('vercel.app')) {
+      callback(null, true); // Allow all Vercel URLs
     } else {
+      console.log('CORS rejected for origin:', origin);
       callback(new Error('CORS not allowed'));
     }
   },

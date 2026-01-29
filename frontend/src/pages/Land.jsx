@@ -157,7 +157,7 @@ const Land = () => {
   });
 
   const handleLandClick = (land) => {
-    navigate(`/land/${land.id}`); // Use navigate to redirect to the land detail page
+    navigate(`/land-details/${land._id || land.id}`); // Use _id or fallback to id
   };
 
   return (
@@ -276,18 +276,26 @@ const Land = () => {
             {filteredLands.map((land, index) => (
               <React.Fragment key={land._id}>
                 <div
-                  className="bg-white p-4 shadow rounded-lg hover:shadow-lg cursor-pointer"
-                  onClick={() => handleLandClick(land)} // Trigger the click handler
+                  className="bg-white p-4 shadow rounded-lg hover:shadow-lg transition-all border-2 border-gray-200 hover:border-black"
                 >
                   <img
                     src={land.imageUrl || "https://via.placeholder.com/150"}
                     alt={land.title}
-                    className="w-full h-48 object-cover rounded-md"
+                    className="w-full h-48 object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => handleLandClick(land)}
                   />
                   <h5 className="text-lg font-bold mt-2">{land.title}</h5>
-                  <p>{land.description}</p>
-                  <p>₹{land.price.toLocaleString()}</p>
-                  <p>Location: {land.location}</p>
+                  <p className="text-gray-600 text-sm mb-2 line-clamp-2">{land.description}</p>
+                  <p className="text-xl font-bold text-black mb-1">₹{land.price.toLocaleString()}</p>
+                  <p className="text-gray-700 text-sm mb-3">📍 {land.location}</p>
+                  
+                  {/* View Details Button */}
+                  <button
+                    onClick={() => handleLandClick(land)}
+                    className="w-full bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg transition-all mt-3"
+                  >
+                    View Details
+                  </button>
                 </div>
 
                 {/* Add blank space after every two cards on small screens */}

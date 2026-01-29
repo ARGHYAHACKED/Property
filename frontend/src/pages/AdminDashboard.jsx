@@ -24,6 +24,14 @@ const AdminDashboard = () => {
     messages: []
   });
   const [loading, setLoading] = useState(true);
+  const [editingLand, setEditingLand] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    title: '',
+    location: '',
+    price: '',
+    area: '',
+    description: '',
+  });
 
   useEffect(() => {
     fetchAllData();
@@ -79,23 +87,71 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleEditLand = (land) => {
+    setEditingLand(land._id);
+    setEditFormData({
+      title: land.title || '',
+      location: land.location || '',
+      price: land.price || '',
+      area: land.area || '',
+      description: land.description || '',
+    });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingLand || !editFormData.title || !editFormData.location || !editFormData.price || !editFormData.area) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      await axios.put(`${API_BASE_URL}/api/lands/${editingLand}`, editFormData, { withCredentials: true });
+      setEditingLand(null);
+      setEditFormData({
+        title: '',
+        location: '',
+        price: '',
+        area: '',
+        description: '',
+      });
+      fetchAllData();
+      alert('Land updated successfully!');
+    } catch (error) {
+      console.error('Error updating land:', error);
+      alert('Failed to update land');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingLand(null);
+    setEditFormData({
+      title: '',
+      location: '',
+      price: '',
+      area: '',
+      description: '',
+    });
+  };
+
   // Stat Card Component
   const StatCard = ({ title, value, icon: Icon, color }) => (
-    <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 ${color}`}>
+    <div className={`bg-white rounded-lg shadow-lg p-6 border-l-4 ${color} hover:shadow-xl transition-all duration-300`}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-gray-600 text-sm font-medium">{title}</p>
-          <p className="text-3xl font-bold text-gray-800 mt-2">{value}</p>
+          <p className="text-gray-500 text-sm font-semibold uppercase tracking-wide">{title}</p>
+          <p className="text-4xl font-bold text-black mt-3">{value.toLocaleString()}</p>
         </div>
-        <Icon className={`w-12 h-12 ${color.replace('border', 'text')}`} />
+        <div className={`p-4 rounded-full ${color.replace('border-', 'bg-').replace('l-4', '')}`}>
+          <Icon className={`w-8 h-8 ${color.replace('border', 'text')}`} />
+        </div>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+      <header className="bg-black text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <BarChart3 className="w-8 h-8" />
@@ -103,7 +159,7 @@ const AdminDashboard = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition-colors"
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors font-semibold"
           >
             <LogOut className="w-5 h-5" />
             Logout
@@ -114,14 +170,14 @@ const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard title="Total Users" value={stats.totalUsers} icon={Users} color="border-blue-500 text-blue-500" />
-          <StatCard title="Total Properties" value={stats.totalProperties} icon={Home} color="border-green-500 text-green-500" />
-          <StatCard title="Total Lands" value={stats.totalLands} icon={Landmark} color="border-yellow-500 text-yellow-500" />
-          <StatCard title="Total Messages" value={stats.totalMessages} icon={MessageSquare} color="border-purple-500 text-purple-500" />
+          <StatCard title="Total Users" value={stats.totalUsers} icon={Users} color="border-black text-black" />
+          <StatCard title="Total Properties" value={stats.totalProperties} icon={Home} color="border-gray-700 text-gray-700" />
+          <StatCard title="Total Lands" value={stats.totalLands} icon={Landmark} color="border-gray-600 text-gray-600" />
+          <StatCard title="Total Messages" value={stats.totalMessages} icon={MessageSquare} color="border-gray-500 text-gray-500" />
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex gap-2 mb-8 border-b border-gray-200 overflow-x-auto">
+        <div className="flex gap-2 mb-8 border-b-2 border-gray-300 overflow-x-auto">
           {[
             { id: 'overview', label: 'Overview' },
             { id: 'users', label: 'Users' },
@@ -132,10 +188,10 @@ const AdminDashboard = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 font-medium transition-colors whitespace-nowrap ${
+              className={`px-4 py-3 font-semibold transition-all whitespace-nowrap text-sm uppercase tracking-wide ${
                 activeTab === tab.id
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-600 hover:text-gray-800'
+                  ? 'text-black border-b-4 border-black'
+                  : 'text-gray-500 hover:text-gray-700 border-b-4 border-transparent'
               }`}
             >
               {tab.label}
@@ -144,10 +200,10 @@ const AdminDashboard = () => {
         </div>
 
         {/* Content Area */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
           {loading ? (
             <div className="flex justify-center items-center h-64">
-              <p className="text-gray-600">Loading...</p>
+              <p className="text-gray-500 font-semibold">Loading...</p>
             </div>
           ) : (
             <>
@@ -227,7 +283,7 @@ const AdminDashboard = () => {
                   <div className="mb-6">
                     <button 
                       onClick={() => navigate('/add-property')}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-black hover:bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                     >
                       <Plus className="w-5 h-5" />
                       Add New Property
@@ -238,12 +294,12 @@ const AdminDashboard = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {data.properties && data.properties.length > 0 ? (
                       data.properties.map(property => (
-                        <div key={property._id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100">
+                        <div key={property._id} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-200">
                           <div className="relative">
                             {property.images && property.images[0] && (
                               <img src={property.images[0]} alt={property.title} className="w-full h-48 object-cover" />
                             )}
-                            <div className="absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                            <div className="absolute top-3 right-3 bg-black text-white px-3 py-1 rounded-full text-xs font-semibold">
                               Property
                             </div>
                           </div>
@@ -253,14 +309,14 @@ const AdminDashboard = () => {
                               <Home className="w-4 h-4 text-gray-500" />
                               {property.location}
                             </div>
-                            <p className="text-blue-600 font-bold text-xl mb-4">₹ {property.price?.toLocaleString()}</p>
+                            <p className="text-black font-bold text-xl mb-4">₹ {property.price?.toLocaleString()}</p>
                             <div className="flex gap-2">
-                              <button className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1 transition-all">
+                              <button className="flex-1 bg-black hover:bg-gray-800 text-white py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-1 transition-all">
                                 <Eye className="w-4 h-4" /> View
                               </button>
                               <button
                                 onClick={() => handleDelete('property', property._id)}
-                                className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1 transition-all"
+                                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-1 transition-all"
                               >
                                 <Trash2 className="w-4 h-4" /> Delete
                               </button>
@@ -271,7 +327,7 @@ const AdminDashboard = () => {
                     ) : (
                       <div className="col-span-full text-center py-12">
                         <Home className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                        <p className="text-gray-600 text-lg">No properties yet</p>
+                        <p className="text-gray-600 text-lg font-semibold">No properties yet</p>
                         <p className="text-gray-500 text-sm mt-1">Click "Add New Property" to get started</p>
                       </div>
                     )}
@@ -286,7 +342,7 @@ const AdminDashboard = () => {
                   <div className="mb-6">
                     <button 
                       onClick={() => navigate('/add-land')}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-black hover:bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                     >
                       <Plus className="w-5 h-5" />
                       Add New Land
@@ -297,41 +353,117 @@ const AdminDashboard = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {data.lands && data.lands.length > 0 ? (
                       data.lands.map(land => (
-                        <div key={land._id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100">
+                        <div key={land._id} className={`bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-2 ${editingLand === land._id ? 'border-black' : 'border-gray-200'}`}>
                           <div className="relative">
                             {land.images && land.images[0] && (
                               <img src={land.images[0]} alt={land.title} className="w-full h-48 object-cover" />
                             )}
-                            <div className="absolute top-3 right-3 bg-yellow-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                            <div className="absolute top-3 right-3 bg-black text-white px-3 py-1 rounded-full text-xs font-semibold">
                               Land
                             </div>
                           </div>
                           <div className="p-5">
-                            <h3 className="font-bold text-gray-800 text-lg mb-2">{land.title}</h3>
-                            <div className="flex items-center gap-2 text-gray-600 text-sm mb-2">
-                              <Landmark className="w-4 h-4 text-gray-500" />
-                              {land.location}
-                            </div>
-                            <p className="text-gray-700 text-sm font-medium mb-3">📐 {land.area} acres</p>
-                            <p className="text-yellow-600 font-bold text-xl mb-4">₹ {land.price?.toLocaleString()}</p>
-                            <div className="flex gap-2">
-                              <button className="flex-1 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1 transition-all">
-                                <Eye className="w-4 h-4" /> View
-                              </button>
-                              <button
-                                onClick={() => handleDelete('land', land._id)}
-                                className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1 transition-all"
-                              >
-                                <Trash2 className="w-4 h-4" /> Delete
-                              </button>
-                            </div>
+                            {editingLand === land._id ? (
+                              /* Edit Form */
+                              <div className="space-y-3">
+                                <div>
+                                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Title</label>
+                                  <input
+                                    type="text"
+                                    value={editFormData.title}
+                                    onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm"
+                                    placeholder="Land Title"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Location</label>
+                                  <input
+                                    type="text"
+                                    value={editFormData.location}
+                                    onChange={(e) => setEditFormData({ ...editFormData, location: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm"
+                                    placeholder="Location"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Price (₹)</label>
+                                  <input
+                                    type="number"
+                                    value={editFormData.price}
+                                    onChange={(e) => setEditFormData({ ...editFormData, price: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm"
+                                    placeholder="Price"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Area (Acres)</label>
+                                  <input
+                                    type="number"
+                                    value={editFormData.area}
+                                    onChange={(e) => setEditFormData({ ...editFormData, area: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm"
+                                    placeholder="Area in acres"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Description</label>
+                                  <textarea
+                                    value={editFormData.description}
+                                    onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm"
+                                    placeholder="Description"
+                                    rows="2"
+                                  />
+                                </div>
+                                <div className="flex gap-2 pt-2">
+                                  <button
+                                    onClick={handleSaveEdit}
+                                    className="flex-1 bg-black hover:bg-gray-800 text-white py-2 rounded-lg text-sm font-semibold transition-all"
+                                  >
+                                    Save
+                                  </button>
+                                  <button
+                                    onClick={handleCancelEdit}
+                                    className="flex-1 bg-gray-300 hover:bg-gray-400 text-black py-2 rounded-lg text-sm font-semibold transition-all"
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              /* Display Mode */
+                              <>
+                                <h3 className="font-bold text-gray-800 text-lg mb-2">{land.title}</h3>
+                                <div className="flex items-center gap-2 text-gray-600 text-sm mb-2">
+                                  <Landmark className="w-4 h-4 text-gray-500" />
+                                  {land.location}
+                                </div>
+                                <p className="text-gray-700 text-sm font-medium mb-3">📐 {land.area} acres</p>
+                                <p className="text-black font-bold text-xl mb-4">₹ {land.price?.toLocaleString()}</p>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => handleEditLand(land)}
+                                    className="flex-1 bg-black hover:bg-gray-800 text-white py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-1 transition-all"
+                                  >
+                                    <Edit className="w-4 h-4" /> Edit
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete('land', land._id)}
+                                    className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-1 transition-all"
+                                  >
+                                    <Trash2 className="w-4 h-4" /> Delete
+                                  </button>
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
                       ))
                     ) : (
                       <div className="col-span-full text-center py-12">
                         <Landmark className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                        <p className="text-gray-600 text-lg">No lands yet</p>
+                        <p className="text-gray-600 text-lg font-semibold">No lands yet</p>
                         <p className="text-gray-500 text-sm mt-1">Click "Add New Land" to get started</p>
                       </div>
                     )}

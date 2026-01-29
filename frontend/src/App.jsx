@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Home from "./pages/Home";
+import Home from "./pages/HomeModern";
 import AddProperty from "./pages/AddProperty";
 import AddLand from "./pages/AddLand";
 import PropertyDetails from "./pages/PropertyDetails";

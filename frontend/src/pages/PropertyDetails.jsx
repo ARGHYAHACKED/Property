@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import API_BASE_URL from '../config/api';
 import {
   MapPin,
@@ -30,8 +31,8 @@ const PropertyDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
-
-  const userId = "67533ce7a4fdf6b9ff5abf04";
+  const [currentUser, setCurrentUser] = useState(null);
+  const [requestSubmitting, setRequestSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchPropertyAndRelated = async () => {
@@ -73,6 +74,24 @@ const PropertyDetails = () => {
     }
   };
 
+  const getAuthToken = () => Cookies.get('token') || localStorage.getItem('token');
+
+  useEffect(() => {
+    const token = getAuthToken();
+    if (!token || !isModalOpen) return;
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/auth/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setCurrentUser(res.data?.user || res.data);
+      } catch {
+        setCurrentUser(null);
+      }
+    };
+    fetchUser();
+  }, [isModalOpen]);
+
   const handleRequestPapers = () => {
     setIsModalOpen(true);
   };
@@ -82,20 +101,31 @@ const PropertyDetails = () => {
   };
 
   const handleSubmitRequest = async () => {
-    const requestData = {
-      userId,
-      propertyId: id,
-      confirmation: isCheckboxChecked,
-    };
+    const token = getAuthToken();
+    if (!token || !currentUser?._id) {
+      alert('Please log in to request papers.');
+      return;
+    }
+    if (!isCheckboxChecked) {
+      alert('Please confirm that you agree to pay the fee.');
+      return;
+    }
 
+    setRequestSubmitting(true);
     try {
-      await axios.post(`${API_BASE_URL}/api/request`, requestData);
+      await axios.post(
+        `${API_BASE_URL}/api/request`,
+        { userId: currentUser._id, propertyId: id, landId: id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       alert('Request submitted successfully!');
       setIsModalOpen(false);
       setIsCheckboxChecked(false);
-    } catch (error) {
-      console.error('Error submitting request:', error);
-      alert('Failed to submit request. Please try again.');
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Request failed';
+      alert(msg);
+    } finally {
+      setRequestSubmitting(false);
     }
   };
 
@@ -428,43 +458,57 @@ const PropertyDetails = () => {
               </button>
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg mb-6 border-l-4 border-black">
-              <p className="text-gray-700">
-                <span className="font-bold text-black">Fee:</span> ₹500 for requesting property papers
-              </p>
-            </div>
+            {!getAuthToken() ? (
+              <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-amber-800 font-medium mb-3">Please log in to request papers.</p>
+                <button
+                  onClick={() => { setIsModalOpen(false); navigate('/login'); }}
+                  className="w-full px-4 py-2 bg-black text-white font-semibold rounded-lg hover:bg-gray-800"
+                >
+                  Go to Login
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="bg-gray-50 p-4 rounded-lg mb-6 border-l-4 border-black">
+                  <p className="text-gray-700">
+                    <span className="font-bold text-black">Fee:</span> ₹500 for requesting property papers
+                  </p>
+                </div>
 
-            <label className="flex items-start gap-3 mb-6 p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-all">
-              <input
-                type="checkbox"
-                checked={isCheckboxChecked}
-                onChange={handleCheckboxChange}
-                className="w-5 h-5 mt-1 accent-black cursor-pointer"
-              />
-              <span className="text-gray-700">
-                I confirm my request and agree to pay ₹500 for the property papers
-              </span>
-            </label>
+                <label className="flex items-start gap-3 mb-6 p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-all">
+                  <input
+                    type="checkbox"
+                    checked={isCheckboxChecked}
+                    onChange={handleCheckboxChange}
+                    className="w-5 h-5 mt-1 accent-black cursor-pointer"
+                  />
+                  <span className="text-gray-700">
+                    I confirm my request and agree to pay ₹500 for the property papers
+                  </span>
+                </label>
 
-            <div className="flex gap-3">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmitRequest}
-                disabled={!isCheckboxChecked}
-                className={`flex-1 px-4 py-3 font-bold rounded-lg transition-all ${
-                  isCheckboxChecked
-                    ? 'bg-black hover:bg-gray-800 text-white'
-                    : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                }`}
-              >
-                Submit Request
-              </button>
-            </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSubmitRequest}
+                    disabled={!currentUser || !isCheckboxChecked || requestSubmitting}
+                    className={`flex-1 px-4 py-3 font-bold rounded-lg transition-all ${
+                      currentUser && isCheckboxChecked && !requestSubmitting
+                        ? 'bg-black hover:bg-gray-800 text-white'
+                        : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                    }`}
+                  >
+                    {requestSubmitting ? 'Submitting...' : 'Submit Request'}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import API_BASE_URL from '../config/api';
 import {
   Button,
@@ -66,31 +67,29 @@ const LandDetails = () => {
   };
 
   const handleSubmitRequest = async () => {
-    const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("token"))
-        ?.split("=")[1];  // Assuming the token is stored in localStorage
+    const token = Cookies.get('token') || localStorage.getItem('token');
     if (!token) {
       alert('You must be logged in to request papers.');
       return;
     }
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${API_BASE_URL}/api/land-request/create`,
-        { landId: id }, // Send only the landId
+        { landId: id },
         {
+          withCredentials: true,
           headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the headers
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
         }
       );
-      console.log(response.data);
       setRequestSuccess(true);
       setOpenDialog(false);
     } catch (error) {
-      console.error('Error submitting request:', error);
-      alert('Failed to submit the request. Please try again.');
+      const msg = error.response?.data?.error || error.response?.data?.message || error.message;
+      alert(msg || 'Failed to submit the request. Please try again.');
     }
   };
 

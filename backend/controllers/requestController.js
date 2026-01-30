@@ -4,37 +4,36 @@ const Land = require('../models/propertyModel'); // Assuming you have a Land mod
 
 module.exports = {
   createLandRequest: async (req, res) => {
-    console.log(req.body)
     try {
-      const { userId, landId } = req.body;
-      console.log(userId)
-      console.log(req.body)
-      console.log(landId)
-
-      // Fetch user and land details
-      const user = await User.findById(userId);
-      const land = await Land.findById(landId);
-
-      if (!user || !land) {
-        return res.status(404).json({ message: "User or Land not found" });
+      const { userId, landId, propertyId } = req.body;
+      const propertyOrLandId = propertyId || landId;
+      if (!propertyOrLandId) {
+        return res.status(400).json({ message: "propertyId or landId is required" });
+      }
+      if (!userId) {
+        return res.status(400).json({ message: "userId is required" });
       }
 
-      // Create the request
-      const newRequest = await LandRequest.create({ userId, landId });
+      const user = await User.findById(userId);
+      const property = await Land.findById(propertyOrLandId);
 
-      // Respond with fetched details
+      if (!user || !property) {
+        return res.status(404).json({ message: "User or Property not found" });
+      }
+
+      const existing = await LandRequest.findOne({ userId, landId: propertyOrLandId });
+      if (existing) {
+        return res.status(400).json({ message: "You have already requested papers for this property" });
+      }
+
+      const newRequest = await LandRequest.create({ userId, landId: propertyOrLandId });
+
       res.status(201).json({
-        message: "Land request created successfully",
+        message: "Request created successfully",
         data: {
           _id: newRequest._id,
-          user: {
-            name: user.name,
-            mobile: user.mobile,
-          },
-          land: {
-            title: land.title,
-            location: land.location,
-          },
+          user: { name: user.name, mobile: user.mobile },
+          property: { title: property.title, location: property.location },
           createdAt: newRequest.createdAt,
         },
       });

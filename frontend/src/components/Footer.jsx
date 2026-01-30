@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Home, 
   Phone, 
@@ -12,6 +13,7 @@ import {
 } from 'lucide-react';
 
 const Footer = () => {
+  const linkClass = "flex items-center gap-2 hover:text-white transition-all group";
   return (
     <footer className="bg-black text-gray-300">
       {/* Main Footer Content */}
@@ -21,27 +23,27 @@ const Footer = () => {
             
             {/* Company Info */}
             <div className="md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
+              <Link to="/" className="flex items-center gap-2 mb-4">
                 <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
                   <Home className="w-6 h-6 text-black" />
                 </div>
                 <h3 className="text-xl font-bold text-white">55acre</h3>
-              </div>
+              </Link>
               <p className="text-gray-400 text-sm mb-4">
-                Your trusted partner in finding the perfect property or land.
+                Asset First! Your trusted partner in finding the perfect property or land.
               </p>
               {/* Social Links */}
               <div className="flex gap-4">
-                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-white rounded-full flex items-center justify-center transition-all text-gray-300 hover:text-black">
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 hover:bg-white rounded-full flex items-center justify-center transition-all text-gray-300 hover:text-black">
                   <Facebook className="w-5 h-5" />
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-white rounded-full flex items-center justify-center transition-all text-gray-300 hover:text-black">
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 hover:bg-white rounded-full flex items-center justify-center transition-all text-gray-300 hover:text-black">
                   <Twitter className="w-5 h-5" />
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-white rounded-full flex items-center justify-center transition-all text-gray-300 hover:text-black">
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 hover:bg-white rounded-full flex items-center justify-center transition-all text-gray-300 hover:text-black">
                   <Linkedin className="w-5 h-5" />
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-white rounded-full flex items-center justify-center transition-all text-gray-300 hover:text-black">
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 hover:bg-white rounded-full flex items-center justify-center transition-all text-gray-300 hover:text-black">
                   <Instagram className="w-5 h-5" />
                 </a>
               </div>
@@ -51,36 +53,11 @@ const Footer = () => {
             <div>
               <h4 className="text-lg font-bold text-white mb-6">Properties</h4>
               <ul className="space-y-3">
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    Buy Properties
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    Sell Property
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    Rent Property
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    Featured List
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    Price Guide
-                  </a>
-                </li>
+                <li><Link to="/property" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />Buy Properties</Link></li>
+                <li><Link to="/add-property" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />Sell Property</Link></li>
+                <li><Link to="/property" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />Rent Property</Link></li>
+                <li><Link to="/property" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />Featured List</Link></li>
+                <li><Link to="/property" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />Price Guide</Link></li>
               </ul>
             </div>
 
@@ -88,36 +65,11 @@ const Footer = () => {
             <div>
               <h4 className="text-lg font-bold text-white mb-6">Lands</h4>
               <ul className="space-y-3">
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    Buy Land
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    Sell Land
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    Land Types
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    Plot Size Guide
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    Location Map
-                  </a>
-                </li>
+                <li><Link to="/land" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />Buy Land</Link></li>
+                <li><Link to="/add-land" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />Sell Land</Link></li>
+                <li><Link to="/land" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />Land Types</Link></li>
+                <li><Link to="/land" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />Plot Size Guide</Link></li>
+                <li><Link to="/land" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />Location Map</Link></li>
               </ul>
             </div>
 
@@ -125,36 +77,11 @@ const Footer = () => {
             <div>
               <h4 className="text-lg font-bold text-white mb-6">Support</h4>
               <ul className="space-y-3">
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    Contact Us
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    FAQ
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="flex items-center gap-2 hover:text-white transition-all group">
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    Terms & Privacy
-                  </a>
-                </li>
+                <li><Link to="/" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />About Us</Link></li>
+                <li><Link to="/" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />Contact Us</Link></li>
+                <li><Link to="/" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />FAQ</Link></li>
+                <li><Link to="/" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />Blog</Link></li>
+                <li><Link to="/" className={linkClass}><ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />Terms & Privacy</Link></li>
               </ul>
             </div>
 
@@ -213,15 +140,9 @@ const Footer = () => {
                 © 2024 55acre. All rights reserved.
               </p>
               <div className="flex gap-6">
-                <a href="#" className="text-gray-400 hover:text-white text-sm transition-all">
-                  Privacy Policy
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white text-sm transition-all">
-                  Terms of Service
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white text-sm transition-all">
-                  Cookies
-                </a>
+                <Link to="/" className="text-gray-400 hover:text-white text-sm transition-all">Privacy Policy</Link>
+                <Link to="/" className="text-gray-400 hover:text-white text-sm transition-all">Terms of Service</Link>
+                <Link to="/" className="text-gray-400 hover:text-white text-sm transition-all">Cookies</Link>
               </div>
             </div>
           </div>

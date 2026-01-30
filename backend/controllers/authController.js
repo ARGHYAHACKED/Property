@@ -309,20 +309,13 @@ exports.getProfile = async (req, res) => {
 
 
 
-// Get all users
+// Get all users (for admin panel – always return array so counts show properly)
 exports.getAllUsers = async (req, res) => {
     try {
-        // Fetch all users from the database
-        const users = await User.find().select('-password'); // Exclude the password field from the response
-        
-        if (!users || users.length === 0) {
-            return res.status(404).json({ message: 'No users found' });
-        }
-
-        // Respond with the list of users
-        res.status(200).json({ users });
+        const users = await User.find().select('-password');
+        res.status(200).json({ users: users || [] });
     } catch (error) {
         console.error('Error in getAllUsers:', error.message);
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: 'Server error', users: [] });
     }
 };

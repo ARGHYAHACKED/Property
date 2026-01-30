@@ -46,15 +46,19 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white text-black p-4 flex justify-between items-center z-50 shadow-md border-b-2 border-black">
+    <nav className="bg-black text-white p-4 flex justify-between items-center z-50 shadow-lg border-b-2 border-white/20">
       {/* Logo */}
-      <Link to="/" className="text-2xl font-bold">
-        55acre
+      <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="55acre Home">
+        <img
+          src="/logo.png"
+          alt="55acre - Asset First!"
+          className="h-14 w-auto object-contain"
+        />
       </Link>
 
       {/* Hamburger Menu Button for Mobile */}
       <button
-        className="md:hidden text-black text-2xl focus:outline-none"
+        className="md:hidden text-white text-2xl focus:outline-none hover:text-gray-300"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
         ☰
@@ -67,12 +71,12 @@ const Navbar = () => {
             <li
               key={link}
               className={`relative ${
-                getActiveLink(link) ? "text-black font-bold border-b-2 border-black" : "text-gray-700"
+                getActiveLink(link) ? "text-white font-bold border-b-2 border-white" : "text-gray-400"
               }`}
             >
               <Link
                 to={`/${link === "Home" ? "" : link.toLowerCase()}`}
-                className="hover:text-black transition font-semibold"
+                className="hover:text-white transition font-semibold"
               >
                 {link}
               </Link>
@@ -83,7 +87,7 @@ const Navbar = () => {
           {isLoggedIn ? (
             <Link
               to="/profile"
-              className="bg-black text-white p-2 rounded-full hover:bg-gray-800 transition flex items-center"
+              className="bg-white text-black p-2 rounded-full hover:bg-gray-200 transition flex items-center font-semibold"
             >
               <PersonIcon className="mr-2" />
               Profile
@@ -92,13 +96,13 @@ const Navbar = () => {
             <>
               <Link
                 to="/login"
-                className="bg-transparent border-2 border-black text-black px-4 py-1 rounded hover:bg-black hover:text-white transition font-semibold"
+                className="bg-transparent border-2 border-white text-white px-4 py-1 rounded hover:bg-white hover:text-black transition font-semibold"
               >
                 Login
               </Link>
               <Link
                 to="/signup"
-                className="bg-black text-white px-4 py-1 rounded hover:bg-gray-800 transition font-semibold"
+                className="bg-white text-black px-4 py-1 rounded hover:bg-gray-200 transition font-semibold"
               >
                 Sign Up
               </Link>
@@ -109,12 +113,12 @@ const Navbar = () => {
 
       {/* Sliding Menu for Mobile */}
       <div
-        className={`fixed top-0 right-0 h-full bg-white text-black w-3/4 max-w-sm transform transition-transform duration-500 ${
+        className={`fixed top-0 right-0 h-full bg-black text-white w-3/4 max-w-sm transform transition-transform duration-500 ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
-        } z-50 border-l-2 border-black`}
+        } z-50 border-l-2 border-white/20`}
       >
         <button
-          className="absolute top-4 right-4 text-black text-2xl focus:outline-none"
+          className="absolute top-4 right-4 text-white text-2xl focus:outline-none hover:text-gray-300"
           onClick={() => setIsMenuOpen(false)}
         >
           ✕
@@ -124,8 +128,8 @@ const Navbar = () => {
             <li key={link}>
               <Link
                 to={`/${link === "Home" ? "" : link.toLowerCase()}`}
-                className="text-lg hover:text-gray-800 transition font-semibold"
-                onClick={() => setIsMenuOpen(false)} // Close menu on link click
+                className={`text-lg font-semibold transition ${getActiveLink(link) ? "text-white border-b-2 border-white" : "text-gray-400 hover:text-white"}`}
+                onClick={() => setIsMenuOpen(false)}
               >
                 {link}
               </Link>
@@ -136,7 +140,7 @@ const Navbar = () => {
           {isLoggedIn ? (
             <Link
               to="/profile"
-              className="bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 transition flex items-center"
+              className="bg-white text-black px-4 py-2 rounded-full hover:bg-gray-200 transition flex items-center font-semibold"
               onClick={() => setIsMenuOpen(false)}
             >
               <PersonIcon className="mr-2" />
@@ -146,14 +150,14 @@ const Navbar = () => {
             <>
               <Link
                 to="/login"
-                className="bg-transparent border-2 border-black text-black px-4 py-1 rounded hover:bg-black hover:text-white transition font-semibold"
+                className="bg-transparent border-2 border-white text-white px-4 py-1 rounded hover:bg-white hover:text-black transition font-semibold"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Login
               </Link>
               <Link
                 to="/signup"
-                className="bg-black text-white px-4 py-1 rounded hover:bg-gray-800 transition font-semibold"
+                className="bg-white text-black px-4 py-1 rounded hover:bg-gray-200 transition font-semibold"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Sign Up

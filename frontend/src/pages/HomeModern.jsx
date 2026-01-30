@@ -11,8 +11,6 @@ import {
   DollarSign,
   Star,
   ChevronRight,
-  Search,
-  Filter,
   ChevronLeft,
   ChevronDown
 } from 'lucide-react';
@@ -22,7 +20,6 @@ const Home = () => {
   const [properties, setProperties] = useState([]);
   const [lands, setLands] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,9 +43,6 @@ const Home = () => {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <HeroSection />
-
-      {/* Search & Filter Section */}
-      <SearchSection />
 
       {/* Stats Section */}
       <StatsSection />
@@ -263,44 +257,6 @@ const HeroSection = () => {
   );
 };
 
-// Search Section Component
-const SearchSection = () => {
-  return (
-    <div className="bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 shadow-lg border-t-4 border-black">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Search Input */}
-          <div className="md:col-span-2">
-            <div className="relative">
-              <Search className="absolute left-4 top-4 text-gray-600 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search by location or keyword..."
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
-              />
-            </div>
-          </div>
-
-          {/* Property Type Filter */}
-          <div className="relative">
-            <Filter className="absolute left-4 top-4 text-gray-600 w-5 h-5" />
-            <select className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black appearance-none bg-white">
-              <option>All Types</option>
-              <option>Properties</option>
-              <option>Lands</option>
-            </select>
-          </div>
-
-          {/* Search Button */}
-          <button className="bg-black hover:bg-gray-800 text-white font-bold py-3 rounded-lg transition-all">
-            Search
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // Stats Section Component
 const StatsSection = () => {
   const stats = [
@@ -333,6 +289,7 @@ const StatsSection = () => {
 
 // Featured Section Component
 const FeaturedSection = ({ title, items, type, navigate }) => {
+  const viewAllPath = type === 'land' ? '/land' : '/property';
   return (
     <div className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-6xl mx-auto">
@@ -342,7 +299,7 @@ const FeaturedSection = ({ title, items, type, navigate }) => {
             <h2 className="text-4xl font-bold text-black mb-2">{title}</h2>
             <p className="text-gray-700">Handpicked listings for you</p>
           </div>
-          <button className="flex items-center gap-2 px-6 py-3 bg-black hover:bg-gray-800 text-white font-bold rounded-lg transition-all transform hover:scale-105">
+          <button onClick={() => navigate(viewAllPath)} className="flex items-center gap-2 px-6 py-3 bg-black hover:bg-gray-800 text-white font-bold rounded-lg transition-all transform hover:scale-105">
             View All
             <ChevronRight className="w-5 h-5" />
           </button>

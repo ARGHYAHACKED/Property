@@ -58,32 +58,38 @@ const AdminDashboard = () => {
   const fetchAllData = async () => {
     try {
       setLoading(true);
+      const opts = adminAuth();
       const [usersRes, propertiesRes, landsRes, messagesRes, requestRes, landRequestRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/auth/users`, adminAuth()),
-        axios.get(`${API_BASE_URL}/api/properties`, adminAuth()),
-        axios.get(`${API_BASE_URL}/api/lands`, adminAuth()),
-        axios.get(`${API_BASE_URL}/api/messages`, adminAuth()),
-        axios.get(`${API_BASE_URL}/api/request`, adminAuth()).catch(() => ({ data: { data: [] } })),
-        axios.get(`${API_BASE_URL}/api/land-request`, adminAuth()).catch(() => ({ data: { data: [] } }))
+        axios.get(`${API_BASE_URL}/api/auth/users`, opts).catch(() => ({ data: { users: [] } })),
+        axios.get(`${API_BASE_URL}/api/properties`, opts).catch(() => ({ data: [] })),
+        axios.get(`${API_BASE_URL}/api/lands`, opts).catch(() => ({ data: [] })),
+        axios.get(`${API_BASE_URL}/api/messages`, opts).catch(() => ({ data: { messages: [] } })),
+        axios.get(`${API_BASE_URL}/api/request`, opts).catch(() => ({ data: { data: [] } })),
+        axios.get(`${API_BASE_URL}/api/land-request`, opts).catch(() => ({ data: { data: [] } }))
       ]);
 
+      const users = Array.isArray(usersRes.data?.users) ? usersRes.data.users : [];
+      const properties = Array.isArray(propertiesRes.data) ? propertiesRes.data : [];
+      const lands = Array.isArray(landsRes.data) ? landsRes.data : [];
+      const messages = Array.isArray(messagesRes.data?.messages) ? messagesRes.data.messages : [];
+
       setData({
-        users: usersRes.data?.users || [],
-        properties: propertiesRes.data || [],
-        lands: landsRes.data || [],
-        messages: messagesRes.data?.messages || []
+        users,
+        properties,
+        lands,
+        messages
       });
 
       setRequests({
-        propertyRequests: requestRes.data?.data || [],
-        landRequests: landRequestRes.data?.data || []
+        propertyRequests: Array.isArray(requestRes.data?.data) ? requestRes.data.data : [],
+        landRequests: Array.isArray(landRequestRes.data?.data) ? landRequestRes.data.data : []
       });
 
       setStats({
-        totalUsers: usersRes.data?.users?.length || 0,
-        totalProperties: propertiesRes.data?.length || 0,
-        totalLands: landsRes.data?.length || 0,
-        totalMessages: messagesRes.data?.messages?.length || 0
+        totalUsers: users.length,
+        totalProperties: properties.length,
+        totalLands: lands.length,
+        totalMessages: messages.length
       });
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -193,20 +199,23 @@ const AdminDashboard = () => {
     setEditPropertyFormData({ title: '', location: '', price: '', area: '', age: '', description: '', amenities: '' });
   };
 
-  // Stat Card Component
-  const StatCard = ({ title, value, icon: Icon, color }) => (
-    <div className={`bg-white rounded-lg shadow-lg p-6 border-l-4 ${color} hover:shadow-xl transition-all duration-300`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-gray-500 text-sm font-semibold uppercase tracking-wide">{title}</p>
-          <p className="text-4xl font-bold text-black mt-3">{value.toLocaleString()}</p>
-        </div>
-        <div className={`p-4 rounded-full ${color.replace('border-', 'bg-').replace('l-4', '')}`}>
-          <Icon className={`w-8 h-8 ${color.replace('border', 'text')}`} />
+  // Stat Card Component – always show a number
+  const StatCard = ({ title, value, icon: Icon, color }) => {
+    const num = Number(value) || 0;
+    return (
+      <div className={`bg-white rounded-lg shadow-lg p-6 border-l-4 ${color} hover:shadow-xl transition-all duration-300`}>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-gray-500 text-sm font-semibold uppercase tracking-wide">{title}</p>
+            <p className="text-4xl font-bold text-black mt-3">{num.toLocaleString()}</p>
+          </div>
+          <div className={`p-4 rounded-full ${color.replace('border-', 'bg-').replace('l-4', '')}`}>
+            <Icon className={`w-8 h-8 ${color.replace('border', 'text')}`} />
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">

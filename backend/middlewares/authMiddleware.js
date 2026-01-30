@@ -69,6 +69,26 @@ exports.authMiddleware = (req, res, next) => {
 
 
 
+// Accept either admin (cookie/header) or user (Bearer token) for update/delete
+exports.verifyAdminOrUser = async (req, res, next) => {
+  let token = req.cookies?.adminToken || req.headers.authorization?.replace('Bearer ', '');
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if (decoded.email) {
+        req.admin = decoded;
+        return next();
+      }
+      const user = await User.findById(decoded.id)?.select('-password');
+      if (user) {
+        req.user = user;
+        return next();
+      }
+    } catch (e) {}
+  }
+  return res.status(401).json({ message: 'Authorization denied' });
+};
+
 exports.verifyToken1 = async (req, res, next) => {
    
     const token = req.header('Authorization')?.replace('Bearer ', '');

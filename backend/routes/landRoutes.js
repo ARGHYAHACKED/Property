@@ -7,7 +7,7 @@ const {
     deleteLand,
     getFilterOptions,
 } = require('../controllers/landController');
-const { authenticate } = require('../middlewares/authMiddleware');
+const { authenticate, verifyAdminOrUser } = require('../middlewares/authMiddleware');
 const upload = require('../config/multer'); // For file uploads
 const { verifyAdmin } = require('../middlewares/authMiddleware');
 
@@ -25,8 +25,8 @@ router.get('/filters', getFilterOptions);
 // Get a land by ID
 router.get('/:id', getLandById);
 
-// Update a land (protected route)
-router.put('/:id', authenticate, updateLand);
+// Update a land (admin or authenticated user)
+router.put('/:id', verifyAdminOrUser, updateLand);
 
 // Delete a land (protected route)
 router.delete('/:id', authenticate, deleteLand);

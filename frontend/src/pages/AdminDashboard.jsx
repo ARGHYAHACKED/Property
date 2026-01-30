@@ -25,6 +25,7 @@ const AdminDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [editingLand, setEditingLand] = useState(null);
+  const [editingProperty, setEditingProperty] = useState(null);
   const [editFormData, setEditFormData] = useState({
     title: '',
     location: '',
@@ -32,19 +33,38 @@ const AdminDashboard = () => {
     area: '',
     description: '',
   });
+  const [editPropertyFormData, setEditPropertyFormData] = useState({
+    title: '',
+    location: '',
+    price: '',
+    area: '',
+    age: '',
+    description: '',
+    amenities: '',
+  });
+  const [requests, setRequests] = useState({ propertyRequests: [], landRequests: [] });
 
   useEffect(() => {
     fetchAllData();
   }, []);
 
+  const adminAuth = () => ({
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('adminToken') || ''}`,
+    },
+  });
+
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      const [usersRes, propertiesRes, landsRes, messagesRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/auth/users`, { withCredentials: true }),
-        axios.get(`${API_BASE_URL}/api/properties`, { withCredentials: true }),
-        axios.get(`${API_BASE_URL}/api/lands`, { withCredentials: true }),
-        axios.get(`${API_BASE_URL}/api/messages`, { withCredentials: true })
+      const [usersRes, propertiesRes, landsRes, messagesRes, requestRes, landRequestRes] = await Promise.all([
+        axios.get(`${API_BASE_URL}/api/auth/users`, adminAuth()),
+        axios.get(`${API_BASE_URL}/api/properties`, adminAuth()),
+        axios.get(`${API_BASE_URL}/api/lands`, adminAuth()),
+        axios.get(`${API_BASE_URL}/api/messages`, adminAuth()),
+        axios.get(`${API_BASE_URL}/api/request`, adminAuth()).catch(() => ({ data: { data: [] } })),
+        axios.get(`${API_BASE_URL}/api/land-request`, adminAuth()).catch(() => ({ data: { data: [] } }))
       ]);
 
       setData({
@@ -52,6 +72,11 @@ const AdminDashboard = () => {
         properties: propertiesRes.data || [],
         lands: landsRes.data || [],
         messages: messagesRes.data?.messages || []
+      });
+
+      setRequests({
+        propertyRequests: requestRes.data?.data || [],
+        landRequests: landRequestRes.data?.data || []
       });
 
       setStats({
@@ -77,7 +102,7 @@ const AdminDashboard = () => {
     if (window.confirm(`Are you sure you want to delete this ${type}?`)) {
       try {
         const endpoint = type === 'property' ? 'properties' : type === 'land' ? 'lands' : type;
-        await axios.delete(`${API_BASE_URL}/api/${endpoint}/${id}`, { withCredentials: true });
+        await axios.delete(`${API_BASE_URL}/api/${endpoint}/${id}`, adminAuth());
         fetchAllData();
         alert(`${type} deleted successfully!`);
       } catch (error) {
@@ -105,7 +130,7 @@ const AdminDashboard = () => {
     }
 
     try {
-      await axios.put(`${API_BASE_URL}/api/lands/${editingLand}`, editFormData, { withCredentials: true });
+      await axios.put(`${API_BASE_URL}/api/lands/${editingLand}`, editFormData, adminAuth());
       setEditingLand(null);
       setEditFormData({
         title: '',
@@ -131,6 +156,41 @@ const AdminDashboard = () => {
       area: '',
       description: '',
     });
+  };
+
+  const handleEditProperty = (property) => {
+    setEditingProperty(property._id);
+    setEditPropertyFormData({
+      title: property.title || '',
+      location: property.location || '',
+      price: property.price || '',
+      area: property.area || '',
+      age: property.age || '',
+      description: property.description || '',
+      amenities: property.amenities || '',
+    });
+  };
+
+  const handleSavePropertyEdit = async () => {
+    if (!editingProperty || !editPropertyFormData.title || !editPropertyFormData.location) {
+      alert('Please fill in required fields (title, location)');
+      return;
+    }
+    try {
+      await axios.put(`${API_BASE_URL}/api/properties/${editingProperty}`, editPropertyFormData, adminAuth());
+      setEditingProperty(null);
+      setEditPropertyFormData({ title: '', location: '', price: '', area: '', age: '', description: '', amenities: '' });
+      fetchAllData();
+      alert('Property updated successfully!');
+    } catch (error) {
+      console.error('Error updating property:', error);
+      alert('Failed to update property');
+    }
+  };
+
+  const handleCancelPropertyEdit = () => {
+    setEditingProperty(null);
+    setEditPropertyFormData({ title: '', location: '', price: '', area: '', age: '', description: '', amenities: '' });
   };
 
   // Stat Card Component
@@ -183,7 +243,8 @@ const AdminDashboard = () => {
             { id: 'users', label: 'Users' },
             { id: 'properties', label: 'Properties' },
             { id: 'lands', label: 'Lands' },
-            { id: 'messages', label: 'Messages' }
+            { id: 'messages', label: 'Messages' },
+            { id: 'requests', label: 'Requests' }
           ].map(tab => (
             <button
               key={tab.id}
@@ -293,37 +354,71 @@ const AdminDashboard = () => {
                   {/* Properties Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {data.properties && data.properties.length > 0 ? (
-                      data.properties.map(property => (
-                        <div key={property._id} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-200">
+                      data.properties.map(property => {
+                        const propId = property._id || property.id;
+                        return (
+                        <div key={propId} className={`bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-2 ${editingProperty === propId ? 'border-black' : 'border-gray-200'}`}>
                           <div className="relative">
-                            {property.images && property.images[0] && (
-                              <img src={property.images[0]} alt={property.title} className="w-full h-48 object-cover" />
+                            {(property.images?.[0] || property.imageUrl) && (
+                              <img src={property.images?.[0] || property.imageUrl} alt={property.title} className="w-full h-48 object-cover" />
                             )}
                             <div className="absolute top-3 right-3 bg-black text-white px-3 py-1 rounded-full text-xs font-semibold">
                               Property
                             </div>
                           </div>
                           <div className="p-5">
-                            <h3 className="font-bold text-gray-800 text-lg mb-2">{property.title}</h3>
-                            <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
-                              <Home className="w-4 h-4 text-gray-500" />
-                              {property.location}
-                            </div>
-                            <p className="text-black font-bold text-xl mb-4">₹ {property.price?.toLocaleString()}</p>
-                            <div className="flex gap-2">
-                              <button className="flex-1 bg-black hover:bg-gray-800 text-white py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-1 transition-all">
-                                <Eye className="w-4 h-4" /> View
-                              </button>
-                              <button
-                                onClick={() => handleDelete('property', property._id)}
-                                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-1 transition-all"
-                              >
-                                <Trash2 className="w-4 h-4" /> Delete
-                              </button>
-                            </div>
+                            {editingProperty === propId ? (
+                              <div className="space-y-3">
+                                <div>
+                                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Title</label>
+                                  <input type="text" value={editPropertyFormData.title} onChange={(e) => setEditPropertyFormData({ ...editPropertyFormData, title: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm" placeholder="Title" />
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Location</label>
+                                  <input type="text" value={editPropertyFormData.location} onChange={(e) => setEditPropertyFormData({ ...editPropertyFormData, location: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm" placeholder="Location" />
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Price (₹)</label>
+                                  <input type="number" value={editPropertyFormData.price} onChange={(e) => setEditPropertyFormData({ ...editPropertyFormData, price: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm" placeholder="Price" />
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Area</label>
+                                  <input type="text" value={editPropertyFormData.area} onChange={(e) => setEditPropertyFormData({ ...editPropertyFormData, area: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm" placeholder="Area" />
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1">Description</label>
+                                  <textarea value={editPropertyFormData.description} onChange={(e) => setEditPropertyFormData({ ...editPropertyFormData, description: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm" rows="2" placeholder="Description" />
+                                </div>
+                                <div className="flex gap-2 pt-2">
+                                  <button onClick={handleSavePropertyEdit} className="flex-1 bg-black hover:bg-gray-800 text-white py-2 rounded-lg text-sm font-semibold">Save</button>
+                                  <button onClick={handleCancelPropertyEdit} className="flex-1 bg-gray-300 hover:bg-gray-400 text-black py-2 rounded-lg text-sm font-semibold">Cancel</button>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <h3 className="font-bold text-gray-800 text-lg mb-2">{property.title}</h3>
+                                <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
+                                  <Home className="w-4 h-4 text-gray-500" />
+                                  {property.location}
+                                </div>
+                                <p className="text-black font-bold text-xl mb-4">₹ {property.price?.toLocaleString()}</p>
+                                <div className="flex gap-2">
+                                  <button onClick={() => navigate(`/property-details/${propId}`)} className="flex-1 bg-black hover:bg-gray-800 text-white py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-1 transition-all">
+                                    <Eye className="w-4 h-4" /> View
+                                  </button>
+                                  <button onClick={() => handleEditProperty({ ...property, _id: propId })} className="flex-1 bg-black hover:bg-gray-800 text-white py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-1 transition-all">
+                                    <Edit className="w-4 h-4" /> Edit
+                                  </button>
+                                  <button onClick={() => handleDelete('property', propId)} className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-1 transition-all">
+                                    <Trash2 className="w-4 h-4" /> Delete
+                                  </button>
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
-                      ))
+                      );
+                    })
                     ) : (
                       <div className="col-span-full text-center py-12">
                         <Home className="w-12 h-12 text-gray-400 mx-auto mb-3" />
@@ -504,6 +599,70 @@ const AdminDashboard = () => {
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Requests Tab - Property & Land requests (user request papers) */}
+              {activeTab === 'requests' && (
+                <div className="space-y-8">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Property / Land Requests (Papers)</h2>
+                    <p className="text-gray-600 text-sm mb-4">Requests from /api/request</p>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-gray-100">
+                          <tr>
+                            <th className="px-4 py-2 text-left">User</th>
+                            <th className="px-4 py-2 text-left">Item</th>
+                            <th className="px-4 py-2 text-left">Location</th>
+                            <th className="px-4 py-2 text-left">Date</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {requests.propertyRequests?.map((r) => (
+                            <tr key={r._id} className="border-b hover:bg-gray-50">
+                              <td className="px-4 py-3">{r.userId?.name || 'N/A'} {r.userId?.mobile && `(${r.userId.mobile})`}</td>
+                              <td className="px-4 py-3">{r.landId?.title || r.landId?.name || '—'}</td>
+                              <td className="px-4 py-3">{r.landId?.location || '—'}</td>
+                              <td className="px-4 py-3">{r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '—'}</td>
+                            </tr>
+                          ))}
+                          {(!requests.propertyRequests || requests.propertyRequests.length === 0) && (
+                            <tr><td colSpan="4" className="px-4 py-4 text-center text-gray-500">No property/land requests yet</td></tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Land Requests (Logged-in users)</h2>
+                    <p className="text-gray-600 text-sm mb-4">Requests from /api/land-request</p>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-gray-100">
+                          <tr>
+                            <th className="px-4 py-2 text-left">User</th>
+                            <th className="px-4 py-2 text-left">Land</th>
+                            <th className="px-4 py-2 text-left">Location</th>
+                            <th className="px-4 py-2 text-left">Date</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {requests.landRequests?.map((r) => (
+                            <tr key={r._id} className="border-b hover:bg-gray-50">
+                              <td className="px-4 py-3">{r.userId?.name || 'N/A'} {r.userId?.email && `(${r.userId.email})`}</td>
+                              <td className="px-4 py-3">{r.landId?.title || '—'}</td>
+                              <td className="px-4 py-3">{r.landId?.location || '—'}</td>
+                              <td className="px-4 py-3">{r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '—'}</td>
+                            </tr>
+                          ))}
+                          {(!requests.landRequests || requests.landRequests.length === 0) && (
+                            <tr><td colSpan="4" className="px-4 py-4 text-center text-gray-500">No land requests yet</td></tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               )}

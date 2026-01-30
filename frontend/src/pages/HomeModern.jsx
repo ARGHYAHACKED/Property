@@ -161,10 +161,10 @@ const HeroSection = () => {
               
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 animate-fadeInUp">
-                <button className="px-8 py-4 bg-white text-black font-bold rounded-lg hover:shadow-2xl transition-all transform hover:scale-105">
+                <button onClick={() => navigate('/property')} className="px-8 py-4 bg-white text-black font-bold rounded-lg hover:shadow-2xl transition-all transform hover:scale-105">
                   Explore Properties
                 </button>
-                <button className="px-8 py-4 bg-gray-700 text-white font-bold rounded-lg hover:bg-gray-800 transition-all transform hover:scale-105 border-2 border-white">
+                <button onClick={() => navigate('/land')} className="px-8 py-4 bg-gray-700 text-white font-bold rounded-lg hover:bg-gray-800 transition-all transform hover:scale-105 border-2 border-white">
                   View Lands
                 </button>
               </div>
@@ -172,9 +172,9 @@ const HeroSection = () => {
 
             {/* Right Content - Carousel & Property Card */}
             {properties.length > 0 && currentProperty && (
-              <div className="flex flex-col gap-6">
-                {/* Carousel Container */}
-                <div className="relative rounded-2xl overflow-hidden shadow-2xl h-80 group">
+              <div className="flex flex-col gap-4 items-end">
+                {/* Carousel Container - smaller */}
+                <div className="relative rounded-xl overflow-hidden shadow-xl h-52 w-80 group">
                   {/* Carousel Images */}
                   <div className="relative w-full h-full">
                     {currentProperty.imageUrls && currentProperty.imageUrls.length > 0 ? (
@@ -226,52 +226,21 @@ const HeroSection = () => {
                   </div>
                 </div>
 
-                {/* Property Details Card */}
-                <div className="bg-white bg-opacity-95 backdrop-blur rounded-xl p-6 shadow-xl">
-                  <h3 className="text-2xl font-bold text-black mb-2">{currentProperty.title}</h3>
-                  
-                  {/* Location */}
-                  <div className="flex items-center gap-2 text-gray-700 mb-4">
-                    <MapPin className="w-5 h-5 text-black" />
-                    <p className="font-semibold">{currentProperty.location}</p>
+                {/* Property Details Card - compact */}
+                <div className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-xl max-w-sm">
+                  <h3 className="text-lg font-bold text-black mb-1 line-clamp-1">{currentProperty.title}</h3>
+                  <div className="flex items-center gap-1.5 text-gray-600 text-sm mb-2">
+                    <MapPin className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{currentProperty.location}</span>
                   </div>
-
-                  {/* Price */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <DollarSign className="w-5 h-5 text-black" />
-                    <p className="text-2xl font-bold text-black">
-                      ₹{(currentProperty.price || 0).toLocaleString()}
-                    </p>
-                  </div>
-
-                  {/* Details Grid */}
-                  <div className="grid grid-cols-2 gap-4 mb-4 pb-4 border-b-2 border-gray-200">
-                    {currentProperty.area && (
-                      <div>
-                        <p className="text-gray-600 text-sm">Area</p>
-                        <p className="text-lg font-bold text-black">{currentProperty.area} acres</p>
-                      </div>
-                    )}
-                    {currentProperty.age && (
-                      <div>
-                        <p className="text-gray-600 text-sm">Age</p>
-                        <p className="text-lg font-bold text-black">{currentProperty.age} years</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-gray-700 text-sm line-clamp-2 mb-4">
-                    {currentProperty.description}
-                  </p>
-
-                  {/* View Details Button */}
+                  <p className="text-xl font-bold text-black mb-2">₹{(currentProperty.price || 0).toLocaleString()}</p>
+                  <p className="text-gray-600 text-xs line-clamp-2 mb-3">{currentProperty.description}</p>
                   <button
                     onClick={() => navigate(`/property-details/${currentProperty.id || currentProperty._id}`)}
-                    className="w-full bg-black hover:bg-gray-800 text-white font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2"
+                    className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-2 rounded-lg text-sm flex items-center justify-center gap-1"
                   >
                     View Full Details
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -382,7 +351,7 @@ const FeaturedSection = ({ title, items, type, navigate }) => {
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {items.map((item) => (
-            <PropertyCard key={item.id || item._id} item={item} type={type} />
+            <PropertyCard key={item.id || item._id} item={item} type={type} navigate={navigate} />
           ))}
         </div>
       </div>
@@ -392,9 +361,11 @@ const FeaturedSection = ({ title, items, type, navigate }) => {
 
 // Property Card Component
 const PropertyCard = ({ item, type, navigate }) => {
+  const id = item.id || item._id;
+  const detailsPath = type === 'land' ? `/land/${id}` : `/property-details/${id}`;
   return (
     <div 
-      onClick={() => navigate(`/property-details/${item.id || item._id}`)}
+      onClick={() => navigate(detailsPath)}
       className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer border-2 border-gray-200 hover:border-black"
     >
       {/* Image Container */}

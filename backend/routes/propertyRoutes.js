@@ -3,6 +3,7 @@ const {
     addProperty,
     getAllProperties,
     getPropertyById,
+    updateProperty,
     deleteProperty,
     getFilterOptions,
 } = require('../controllers/propertyController');
@@ -23,6 +24,9 @@ router.get('/filters', getFilterOptions);
 
 // Get a property by ID
 router.get('/:id', getPropertyById);
+
+// Update a property
+router.put('/:id', updateProperty);
 
 // Delete a property (protected route)
 router.delete('/:id', deleteProperty);

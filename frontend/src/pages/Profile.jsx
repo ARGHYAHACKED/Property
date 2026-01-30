@@ -11,11 +11,9 @@ const Profile = ({ onLogout }) => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = Cookies.get("token");
-        console.log(token)
+        const token = Cookies.get("token") || localStorage.getItem("token");
         if (!token) {
-          navigate("/login");
-          console.log("profile")
+          navigate("/login", { replace: true });
           return;
         }
 
@@ -31,11 +29,8 @@ const Profile = ({ onLogout }) => {
         //   throw new Error("Failed to fetch profile");
         // }
         const data = await response.json();
-        console.log(data);
         setUser(data.user);
       } catch (error) {
-        // console.error("Error fetching profile:", error);
-        console.log(error.message)
         // navigate("/login");
       } finally {
         setLoading(false);
@@ -47,8 +42,9 @@ const Profile = ({ onLogout }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    onLogout();
-    navigate("/login");
+    Cookies.remove("token");
+    onLogout?.();
+    navigate("/login", { replace: true });
   };
 
   if (loading) return <div>Loading...</div>;

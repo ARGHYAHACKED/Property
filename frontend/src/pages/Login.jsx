@@ -16,12 +16,9 @@ const LoginPage = () => {
 
 
     useEffect(() => {
-      const token = Cookies.get("token");
-      console.log(token) // Or localStorage.getItem('token') if you store it in localStorage
-  
+      const token = Cookies.get("token") || localStorage.getItem("token");
       if (token) {
-        // If token exists, redirect to homepage
-        // navigate("/profile"); // Redirect to homepage
+        navigate("/profile", { replace: true });
       }
     }, [navigate]);
 
@@ -41,19 +38,12 @@ const LoginPage = () => {
     const handleVerifyOtp = async () => {
         try {
             const response = await axios.post(`${API_BASE_URL}/api/auth/loginVerifyOtp`, { phone, otp });
-            console.log(response)
-            console.log(response.data.token)
             if (response.data.token) {
-                
                 setMessage('OTP verified successfully!');
-                
-                Cookies.set('token', response.data.token, { expires: 7 });
-                
-               
-                
-                navigate("/");
-                window.location.reload()
-
+                const token = response.data.token;
+                Cookies.set('token', token, { expires: 7 });
+                localStorage.setItem('token', token);
+                navigate('/profile', { replace: true });
             }
         } catch (error) {
             console.error('Error verifying OTP:', error.response?.data || error.message);

@@ -55,7 +55,7 @@ const SignUp = () => {
       Cookies.set("userId", userId, { expires: 7 }); // Cookie expires in 7 days
 
       // Navigate to CreateUser page
-      navigate("/Createuser");
+      navigate("/createuser");
     } catch (err) {
       console.error(err);
       setError("Invalid OTP. Please try again.");

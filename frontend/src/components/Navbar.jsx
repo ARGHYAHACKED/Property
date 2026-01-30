@@ -12,34 +12,32 @@ const Navbar = () => {
 
   useEffect(() => {
     const checkAuthStatus = async () => {
-      const token = Cookies.get("token"); // Retrieve the token from cookies
+      const token = Cookies.get("token");
 
       if (token) {
         try {
-          // Verify token with backend
           const response = await axios.get(`${API_BASE_URL}/api/auth/verify`, {
             headers: {
-              Authorization: `Bearer ${token}`, // Include token in Authorization header
+              Authorization: `Bearer ${token}`,
             },
           });
 
           if (response.status === 200) {
-            setIsLoggedIn(true); // Set logged-in state
+            setIsLoggedIn(true);
           } else {
             setIsLoggedIn(false);
           }
         } catch (error) {
-          // console.error("Authorization failed:", error);
           setIsLoggedIn(false);
-          Cookies.remove("authToken"); // Remove invalid token from cookies
+          Cookies.remove("token");
         }
       } else {
         setIsLoggedIn(false);
       }
     };
 
-    checkAuthStatus(); // Call the auth status check function
-  }, []);
+    checkAuthStatus();
+  }, [location.pathname]);
 
   const getActiveLink = (link) => {
     if (link === "Home" && location.pathname === "/") return true;

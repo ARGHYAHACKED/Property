@@ -12,7 +12,6 @@ const OtpVerify = () => {
 
   // Get userId from the cookie
   const userId = Cookies.get("userId");
-  console.log("User ID from cookie:", userId); // Ensure the userId is correctly stored in the cookie
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,12 +38,11 @@ const OtpVerify = () => {
       });
 
       if (response.data.token) {
-        // Set token in cookies
-        Cookies.set("token", response.data.token, { expires: 1 }); // Set token with an expiry of 1 day
-        console.log("User updated successfully:", response.data);
+        const token = response.data.token;
+        Cookies.set("token", token, { expires: 7 });
+        localStorage.setItem("token", token);
 
-        // Navigate to the profile page
-        navigate("/profile");
+        navigate("/profile", { replace: true });
       } else {
         setError("Failed to update user details. Please try again.");
       }

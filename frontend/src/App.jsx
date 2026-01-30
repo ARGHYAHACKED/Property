@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import Cookies from "js-cookie";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -28,12 +29,13 @@ const App = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    Cookies.remove("token");
     setIsLoggedIn(false);
   };
 
   const UserProtectedRoute = ({ children }) => {
-    const token = localStorage.getItem("token");
-    return token ? children : <Navigate to="/login" />;
+    const token = localStorage.getItem("token") || Cookies.get("token");
+    return token ? children : <Navigate to="/login" replace />;
   };
 
   return (

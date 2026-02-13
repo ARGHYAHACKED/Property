@@ -5,36 +5,74 @@ const fs = require('fs');
 // Add a new property
 exports.addProperty = async (req, res) => {
     try {
-        const { title, description, location, age, area, price, amenities, images } = req.body;
+        const { images, ...otherData } = req.body;
 
         if (!images || !Array.isArray(images)) {
             return res.status(400).json({ error: "Images must be provided as an array" });
         }
 
-        // Upload images to Cloudinary
+        // Upload main property images to Cloudinary with increased size limits
         const uploadPromises = images.map((image) =>
-            cloudinary.uploader.upload(image, { folder: "property_images" })
+            cloudinary.uploader.upload(image, {
+                folder: "property_images",
+                resource_type: "auto",
+                chunk_size: 6000000, // 6MB chunks for large files
+                timeout: 120000 // 2 minute timeout
+            })
         );
 
         const uploadedImages = await Promise.all(uploadPromises);
         const imageUrls = uploadedImages.map((result) => result.secure_url);
 
+        // Upload floor plan images to Cloudinary
+        let processedFloorPlans = [];
+        if (otherData.floorPlans && Array.isArray(otherData.floorPlans)) {
+            processedFloorPlans = await Promise.all(
+                otherData.floorPlans.map(async (plan) => {
+                    if (plan.imageUrl && plan.imageUrl.startsWith('data:')) {
+                        // Upload base64 image to Cloudinary
+                        try {
+                            const uploadResult = await cloudinary.uploader.upload(plan.imageUrl, {
+                                folder: "floor_plans",
+                                resource_type: "auto",
+                                chunk_size: 6000000,
+                                timeout: 120000
+                            });
+                            return { ...plan, imageUrl: uploadResult.secure_url };
+                        } catch (err) {
+                            console.error('Floor plan image upload error:', err);
+                            return plan; // Keep original if upload fails
+                        }
+                    }
+                    return plan;
+                })
+            );
+        }
+
         const newProperty = new Property({
-            title,
-            description,
-            location,
-            price,
+            ...otherData,
             imageUrls,
-            age,
-            area,
-            amenities,
+            floorPlans: processedFloorPlans
         });
 
         await newProperty.save();
         res.status(201).json({ message: "Property details submitted successfully", property: newProperty });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "An error occurred while submitting property details" });
+        console.error('Property submission error:', error);
+
+        // Handle Cloudinary-specific errors
+        if (error.message && error.message.includes('File size too large')) {
+            return res.status(400).json({
+                error: "Image file too large",
+                message: "One or more images exceed the maximum allowed size. Please compress your images or upload fewer images at once.",
+                details: error.message
+            });
+        }
+
+        res.status(500).json({
+            error: "An error occurred while submitting property details",
+            message: error.message || "Unknown error"
+        });
     }
 };
 
@@ -165,6 +203,19 @@ exports.getFilterOptions = async (req, res) => {
 
         console.log(`Found ${prices.length} prices for filtering`);
 
+        // Helper function to format price in Lakhs or Crores
+        const formatPriceLabel = (priceInRupees) => {
+            const lakhs = priceInRupees / 100000;
+            if (lakhs >= 100) {
+                // Convert to Crores if >= 1 Crore
+                const crores = lakhs / 100;
+                return crores % 1 === 0 ? `₹${crores} Cr` : `₹${crores.toFixed(2)} Cr`;
+            } else {
+                // Keep in Lakhs
+                return lakhs % 1 === 0 ? `₹${lakhs}L` : `₹${lakhs.toFixed(2)}L`;
+            }
+        };
+
         let priceRanges = [];
         if (prices.length > 0) {
             try {
@@ -174,25 +225,24 @@ exports.getFilterOptions = async (req, res) => {
 
                 // If min and max are the same, create a single range
                 if (minPrice === maxPrice) {
-                    const lakh = Math.ceil(maxPrice / 100000);
                     priceRanges = [
-                        { label: `₹${lakh}L+`, min: minPrice, max: maxPrice }
+                        { label: `${formatPriceLabel(maxPrice)}+`, min: minPrice, max: maxPrice }
                     ];
                 } else {
                     // Generate dynamic price ranges
                     const priceStep = Math.max(1, Math.ceil((maxPrice - minPrice) / 5));
-                    
+
                     for (let i = 0; i < 5; i++) {
                         const rangeMin = minPrice + (i * priceStep);
                         const rangeMax = i === 4 ? maxPrice : minPrice + ((i + 1) * priceStep);
-                        
-                        const minLakh = Math.floor(rangeMin / 100000);
-                        const maxLakh = Math.ceil(rangeMax / 100000);
-                        
-                        const label = minLakh === maxLakh 
-                            ? `₹${minLakh}L+`
-                            : `₹${minLakh}L - ₹${maxLakh}L`;
-                        
+
+                        const minLabel = formatPriceLabel(rangeMin);
+                        const maxLabel = formatPriceLabel(rangeMax);
+
+                        const label = minLabel === maxLabel
+                            ? `${minLabel}+`
+                            : `${minLabel} - ${maxLabel}`;
+
                         priceRanges.push({
                             label,
                             min: rangeMin,
@@ -212,7 +262,7 @@ exports.getFilterOptions = async (req, res) => {
             areaRanges,
             priceRanges
         };
-        
+
         console.log('Sending filter response:', {
             locationsCount: locations.length,
             areaRangesCount: areaRanges.length,
@@ -223,9 +273,9 @@ exports.getFilterOptions = async (req, res) => {
     } catch (error) {
         console.error('Error in getFilterOptions:', error);
         console.error('Error stack:', error.stack);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Server error fetching filter options',
-            message: error.message 
+            message: error.message
         });
     }
 };

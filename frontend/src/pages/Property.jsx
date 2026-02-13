@@ -21,12 +21,12 @@ const Land = () => {
   const [isSelling, setIsSelling] = useState(false);
   const [showMoreAreas, setShowMoreAreas] = useState(false);
   const [showMorePrices, setShowMorePrices] = useState(false);
-  
+
   // Dynamic filter states
   const [availableLocations, setAvailableLocations] = useState([]);
   const [areaRanges, setAreaRanges] = useState([]);
   const [priceRanges, setPriceRanges] = useState([]);
-  
+
   const [sellData, setSellData] = useState({ title: "", description: "", price: "", location: "", area: "" });
   const navigate = useNavigate(); // Initialize navigate function
 
@@ -50,7 +50,7 @@ const Land = () => {
         console.log('Fetching filter options from:', `${API_BASE_URL}/api/properties/filters`);
         const response = await axios.get(`${API_BASE_URL}/api/properties/filters`);
         console.log('Filter options received:', response.data);
-        
+
         if (response.data) {
           setAvailableLocations(response.data.locations || []);
           setAreaRanges(response.data.areaRanges || [
@@ -65,7 +65,7 @@ const Land = () => {
       } catch (error) {
         console.error("Error fetching filter options:", error);
         console.error("Error details:", error.response?.data || error.message);
-        
+
         // Set fallback values on error
         setAvailableLocations([]);
         setAreaRanges([
@@ -138,24 +138,31 @@ const Land = () => {
     const codeMatch = searchCode
       ? land.title.toLowerCase().includes(searchCode.toLowerCase())
       : true;
-    
+
     const locationMatch = selectedLocations.length === 0
       ? true
       : selectedLocations.includes(land.location);
-    
+
     // Area range filtering
     const areaMatch = selectedAreas.length === 0 ? true : selectedAreas.some(selectedRange => {
       const landAreaNum = parseFloat(land.area);
       return landAreaNum >= selectedRange.min && landAreaNum <= selectedRange.max;
     });
-    
+
     // Price range filtering
     const priceMatch = selectedPrices.length === 0 ? true : selectedPrices.some(selectedRange => {
       return land.price >= selectedRange.min && land.price <= selectedRange.max;
     });
-    
+
     return codeMatch && locationMatch && areaMatch && priceMatch;
   });
+
+  const formatPrice = (price) => {
+    if (!price) return 'Price on Request';
+    if (price >= 10000000) return `₹${(price / 10000000).toFixed(2)} Cr`;
+    if (price >= 100000) return `₹${(price / 100000).toFixed(2)} L`;
+    return `₹${price.toLocaleString()}`;
+  };
 
   const handleLandClick = (land) => {
     navigate(`/property-details/${land._id || land.id}`); // Use _id or fallback to id
@@ -210,7 +217,7 @@ const Land = () => {
           {areaRanges.length > 0 ? (
             <>
               {areaRanges.slice(0, showMoreAreas ? areaRanges.length : 5).map((range) => (
-                <label key={range.label} className="block mb-2">
+                <label key={range.label} className="block mb-2 whitespace-nowrap">
                   <input
                     type="checkbox"
                     value={range.label}
@@ -238,7 +245,7 @@ const Land = () => {
           {priceRanges.length > 0 ? (
             <>
               {priceRanges.slice(0, showMorePrices ? priceRanges.length : 5).map((range) => (
-                <label key={range.label} className="block mb-2">
+                <label key={range.label} className="block mb-2 whitespace-nowrap">
                   <input
                     type="checkbox"
                     value={range.label}
@@ -275,7 +282,7 @@ const Land = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredLands.map((land, index) => (
-              <React.Fragment key={land._id}>
+              <React.Fragment key={land._id || land.id || index}>
                 <div
                   className="bg-white p-4 shadow rounded-lg hover:shadow-lg transition-all border-2 border-gray-200 hover:border-black"
                 >
@@ -287,9 +294,11 @@ const Land = () => {
                   />
                   <h5 className="text-lg font-bold mt-2">{land.title}</h5>
                   <p className="text-gray-600 text-sm mb-2 line-clamp-2">{land.description}</p>
-                  <p className="text-xl font-bold text-black mb-1">₹{land.price.toLocaleString()}</p>
+                  <p className="text-xl font-bold text-black mb-1">
+                    {land.avgPrice || formatPrice(land.price)}
+                  </p>
                   <p className="text-gray-700 text-sm mb-3">📍 {land.location}</p>
-                  
+
                   {/* View Details Button */}
                   <button
                     onClick={() => handleLandClick(land)}

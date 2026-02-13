@@ -48,17 +48,17 @@ const Home = () => {
       <StatsSection />
 
       {/* Featured Properties Section */}
-      <FeaturedSection 
-        title="Featured Properties" 
-        items={properties.slice(0, 6)} 
+      <FeaturedSection
+        title="Featured Properties"
+        items={properties.slice(0, 6)}
         type="property"
         navigate={navigate}
       />
 
       {/* Featured Lands Section */}
-      <FeaturedSection 
-        title="Featured Lands" 
-        items={lands.slice(0, 6)} 
+      <FeaturedSection
+        title="Featured Lands"
+        items={lands.slice(0, 6)}
         type="land"
         navigate={navigate}
       />
@@ -118,6 +118,13 @@ const HeroSection = () => {
     setCarouselIndex((prev) => (prev + 1) % properties.length);
   };
 
+  const formatPrice = (price) => {
+    if (!price) return 'Price on Request';
+    if (price >= 10000000) return `₹${(price / 10000000).toFixed(2)} Cr`;
+    if (price >= 100000) return `₹${(price / 100000).toFixed(2)} L`;
+    return `₹${price.toLocaleString()}`;
+  };
+
   return (
     <div className="relative w-full h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 overflow-hidden">
       {/* Background Image from Carousel */}
@@ -152,7 +159,7 @@ const HeroSection = () => {
               <p className="text-xl sm:text-2xl text-gray-200 mb-8 animate-fadeInUp">
                 Explore 55 acres of premium properties and land listings from verified sellers
               </p>
-              
+
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 animate-fadeInUp">
                 <button onClick={() => navigate('/property')} className="px-8 py-4 bg-white text-black font-bold rounded-lg hover:shadow-2xl transition-all transform hover:scale-105">
@@ -183,9 +190,8 @@ const HeroSection = () => {
                             {currentProperty.imageUrls.slice(0, 5).map((_, idx) => (
                               <div
                                 key={idx}
-                                className={`h-2 rounded-full transition-all ${
-                                  idx === 0 ? 'w-6 bg-white' : 'w-2 bg-gray-300'
-                                }`}
+                                className={`h-2 rounded-full transition-all ${idx === 0 ? 'w-6 bg-white' : 'w-2 bg-gray-300'
+                                  }`}
                               />
                             ))}
                           </div>
@@ -227,7 +233,9 @@ const HeroSection = () => {
                     <MapPin className="w-4 h-4 shrink-0" />
                     <span className="truncate">{currentProperty.location}</span>
                   </div>
-                  <p className="text-xl font-bold text-black mb-2">₹{(currentProperty.price || 0).toLocaleString()}</p>
+                  <p className="text-xl font-bold text-black mb-2">
+                    {currentProperty.avgPrice || formatPrice(currentProperty.price)}
+                  </p>
                   <p className="text-gray-600 text-xs line-clamp-2 mb-3">{currentProperty.description}</p>
                   <button
                     onClick={() => navigate(`/property-details/${currentProperty.id || currentProperty._id}`)}
@@ -318,10 +326,17 @@ const FeaturedSection = ({ title, items, type, navigate }) => {
 
 // Property Card Component
 const PropertyCard = ({ item, type, navigate }) => {
+  const formatPrice = (price) => {
+    if (!price) return 'Price on Request';
+    if (price >= 10000000) return `₹${(price / 10000000).toFixed(2)} Cr`;
+    if (price >= 100000) return `₹${(price / 100000).toFixed(2)} L`;
+    return `₹${price.toLocaleString()}`;
+  };
+
   const id = item.id || item._id;
   const detailsPath = type === 'land' ? `/land/${id}` : `/property-details/${id}`;
   return (
-    <div 
+    <div
       onClick={() => navigate(detailsPath)}
       className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer border-2 border-gray-200 hover:border-black"
     >
@@ -345,7 +360,7 @@ const PropertyCard = ({ item, type, navigate }) => {
       {/* Content */}
       <div className="p-6">
         <h3 className="text-xl font-bold text-black mb-2">{item.title}</h3>
-        
+
         {/* Location */}
         <div className="flex items-center gap-2 text-gray-700 mb-4">
           <MapPin className="w-4 h-4" />
@@ -359,7 +374,9 @@ const PropertyCard = ({ item, type, navigate }) => {
         <div className="flex items-center justify-between pt-4 border-t-2 border-gray-200">
           <div className="flex items-center gap-2">
             <DollarSign className="w-4 h-4 text-black" />
-            <p className="text-lg font-bold text-black">₹{(item.price || 0).toLocaleString()}</p>
+            <p className="text-lg font-bold text-black">
+              {item.avgPrice || formatPrice(item.price)}
+            </p>
           </div>
           {type === 'land' && (
             <span className="text-sm text-gray-700 font-semibold">{item.area} acres</span>
@@ -428,13 +445,13 @@ const CTASection = ({ navigate }) => {
           Browse our extensive collection of properties and lands today
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button 
+          <button
             onClick={() => navigate('/property')}
             className="px-8 py-4 bg-white text-black font-bold rounded-lg hover:shadow-2xl transition-all transform hover:scale-105"
           >
             Browse Properties
           </button>
-          <button 
+          <button
             onClick={() => navigate('/land')}
             className="px-8 py-4 bg-gray-700 text-white font-bold rounded-lg hover:bg-gray-600 transition-all transform hover:scale-105 border-2 border-white"
           >

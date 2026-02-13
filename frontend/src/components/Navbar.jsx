@@ -52,7 +52,7 @@ const Navbar = () => {
         <img
           src="/logo.png"
           alt="55acre - Asset First!"
-          className="h-14 w-auto object-contain"
+          className="h-20 w-auto object-contain"
         />
       </Link>
 
@@ -70,9 +70,8 @@ const Navbar = () => {
           {["Home", "Property", "Land"].map((link) => (
             <li
               key={link}
-              className={`relative ${
-                getActiveLink(link) ? "text-white font-bold border-b-2 border-white" : "text-gray-400"
-              }`}
+              className={`relative ${getActiveLink(link) ? "text-white font-bold border-b-2 border-white" : "text-gray-400"
+                }`}
             >
               <Link
                 to={`/${link === "Home" ? "" : link.toLowerCase()}`}
@@ -113,9 +112,8 @@ const Navbar = () => {
 
       {/* Sliding Menu for Mobile */}
       <div
-        className={`fixed top-0 right-0 h-full bg-black text-white w-3/4 max-w-sm transform transition-transform duration-500 ${
-          isMenuOpen ? "translate-x-0" : "translate-x-full"
-        } z-50 border-l-2 border-white/20`}
+        className={`fixed top-0 right-0 h-full bg-black text-white w-3/4 max-w-sm transform transition-transform duration-500 ${isMenuOpen ? "translate-x-0" : "translate-x-full"
+          } z-50 border-l-2 border-white/20`}
       >
         <button
           className="absolute top-4 right-4 text-white text-2xl focus:outline-none hover:text-gray-300"

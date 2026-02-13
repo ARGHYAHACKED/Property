@@ -19,7 +19,7 @@ const messageRoutes = require("./routes/messageRoutes");
 const RequestRoutes = require('./routes/requestRoutes');
 
 // Existing routes
- // New route for land requests
+// New route for land requests
 
 
 
@@ -56,14 +56,26 @@ const corsOptions = {
 app.use(cors(corsOptions)); // Use the CORS middleware with the updated options
 app.options('*', cors(corsOptions));
 
-// Middleware
-app.use(express.json({ limit: '10mb' })); // Increase payload limit
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
+// Middleware - Increased limits for bulk image uploads
+app.use(express.json({ limit: '250mb' })); // Increase payload limit for bulk uploads
+app.use(express.urlencoded({ limit: '250mb', extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Error handling for payload size
+app.use((err, req, res, next) => {
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({
+      error: 'Payload too large',
+      message: 'The uploaded data exceeds the maximum allowed size. Please reduce the number or size of images.',
+      maxSize: '250MB'
+    });
+  }
+  next(err);
+});
 
 // Database Connection
 mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
@@ -72,7 +84,7 @@ app.use('/api/auth', authRoutes); // Auth-related routes
 app.use('/api/properties', propertyRoutes); // Property routes
 app.use('/api/lands', landRoutes); // Land routes
 app.use('/api/admin', adminRoutes); // Admin routes
-app.use("/api/messages", messageRoutes);  
+app.use("/api/messages", messageRoutes);
 app.use('/api/land-request', requestLandRoutes); // Land request routes
 app.use('/api/request', RequestRoutes); // Additional request routes
 

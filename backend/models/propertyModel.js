@@ -31,9 +31,52 @@ const PropertySchema = new mongoose.Schema({
     },
     imageUrls: { 
         type: [String], // A single URL or file path for the image
-        default: '' 
+        default: [] 
     },
-    
+    developer: String,
+    emiStarts: String,
+    possessionStarts: String,
+    avgPrice: String,
+    sizes: String,
+    configurations: String,
+    reraId: String,
+    projectUnits: String,
+    areaUnit: String,
+    projectSize: String,
+    launchDate: String,
+    overviewProject: String,
+    aroundProject: [{
+        category: String,
+        name: String,
+        distance: String
+    }],
+    moreAboutProject: String,
+    floorPlans: [{
+        title: String,
+        size: String,
+        price: String,
+        imageUrl: String
+    }],
+    tourVideos: [String],
+    amenitiesList: [String],
+    specifications: {
+        type: Map,
+        of: Map
+    },
+    reviews: [{
+        user: String,
+        rating: Number,
+        comment: String,
+        date: { type: Date, default: Date.now }
+    }],
+    priceTrends: String,
+    brochureUrl: String,
+    locality: String,
+    contactDeveloper: {
+        name: String,
+        phone: String,
+        email: String
+    }
 });
 
 module.exports = mongoose.model('Property', PropertySchema);

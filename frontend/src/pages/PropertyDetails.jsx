@@ -45,6 +45,7 @@ const PropertyDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
   const [requestSubmitting, setRequestSubmitting] = useState(false);
+  const [selectedConfigIndex, setSelectedConfigIndex] = useState(0);
 
   // Refs for scroll-to-section
   const sectionRefs = {
@@ -234,23 +235,45 @@ const PropertyDetails = () => {
             </div>
           </div>
 
+          {/* 3a. Configuration Selection (99acres style) */}
+          {property.floorPlans?.length > 1 && (
+            <div className="space-y-4">
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Select Configuration</h3>
+              <div className="flex flex-wrap gap-4">
+                {property.floorPlans.map((plan, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedConfigIndex(index)}
+                    className={`px-8 py-4 rounded-xl font-black uppercase tracking-tighter text-sm transition-all border-4 ${
+                      selectedConfigIndex === index 
+                      ? 'bg-orange-600 border-orange-600 text-white shadow-xl shadow-orange-200' 
+                      : 'bg-white border-gray-100 text-gray-400 hover:border-gray-300'
+                    }`}
+                  >
+                    {plan.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Quick Header Summary Bar */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-orange-50 rounded-2xl p-6 border border-orange-100">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-orange-50 rounded-2xl p-6 border border-orange-100 transition-all">
             <div className="space-y-1">
-              <p className="text-gray-500 text-xs uppercase font-bold">Configurations</p>
-              <p className="text-gray-900 font-bold">{property.configurations || '3, 4 BHK Units'}</p>
+              <p className="text-gray-500 text-xs uppercase font-bold text-[10px] tracking-widest">Configuration</p>
+              <p className="text-gray-900 font-bold">{property.floorPlans?.[selectedConfigIndex]?.title || property.configurations || '3, 4 BHK Units'}</p>
             </div>
             <div className="space-y-1 border-l-0 md:border-l border-orange-200 md:pl-4">
-              <p className="text-gray-500 text-xs uppercase font-bold">Posession Starts</p>
+              <p className="text-gray-500 text-xs uppercase font-bold text-[10px] tracking-widest">Possession Starts</p>
               <p className="text-gray-900 font-bold">{property.possessionStarts || 'Dec, 2026'}</p>
             </div>
             <div className="space-y-1 border-l-0 md:border-l border-orange-200 md:pl-4">
-              <p className="text-gray-500 text-xs uppercase font-bold">Avg. Price</p>
-              <p className="text-gray-900 font-bold text-orange-600">{property.avgPrice || formatPrice(property.price)}</p>
+              <p className="text-gray-500 text-xs uppercase font-bold text-[10px] tracking-widest">Avg. Price</p>
+              <p className="text-gray-900 font-bold text-orange-600">{property.floorPlans?.[selectedConfigIndex]?.price || property.avgPrice || formatPrice(property.price)}</p>
             </div>
             <div className="space-y-1 border-l-0 md:border-l border-orange-200 md:pl-4">
-              <p className="text-gray-500 text-xs uppercase font-bold">Total Area</p>
-              <p className="text-gray-900 font-bold uppercase">{property.area} {property.areaUnit || 'sq.ft'}</p>
+              <p className="text-gray-500 text-xs uppercase font-bold text-[10px] tracking-widest">Unit Area</p>
+              <p className="text-gray-900 font-bold uppercase">{property.floorPlans?.[selectedConfigIndex]?.size || property.area + ' ' + (property.areaUnit || 'sq.ft')}</p>
             </div>
           </div>
 
@@ -320,30 +343,43 @@ const PropertyDetails = () => {
           {/* Floor Plans Section */}
           {property.floorPlans?.length > 0 && (
             <section ref={sectionRefs.floorplans} className="space-y-6">
-              <h3 className="text-2xl font-bold border-b pb-4">Floor Plans</h3>
-              <div className="space-y-4">
-                {property.floorPlans.map((plan, i) => (
-                  <div key={i} className="flex flex-col md:flex-row border rounded-2xl overflow-hidden hover:shadow-lg transition-all group">
-                    <div className="md:w-1/3 aspect-square bg-gray-100 overflow-hidden">
-                      <img src={plan.imageUrl || 'https://via.placeholder.com/400x400?text=Floor+Plan'} className="w-full h-full object-contain group-hover:scale-110 transition-transform" alt={plan.title} />
-                    </div>
-                    <div className="p-6 md:w-2/3 flex flex-col justify-between">
+              <h3 className="text-2xl font-bold border-b pb-4">Project Floor Plans</h3>
+              <div className="space-y-6">
+                {/* Highlighted Selected Floor Plan */}
+                <div className="border-4 border-orange-600 rounded-[32px] overflow-hidden bg-white shadow-2xl relative group">
+                   <div className="absolute top-6 left-6 z-10">
+                      <span className="bg-orange-600 text-white px-6 py-2 rounded-full font-black uppercase tracking-widest text-[10px]">Selected: {property.floorPlans[selectedConfigIndex].title}</span>
+                   </div>
+                   <div className="aspect-video bg-gray-50 flex items-center justify-center p-12">
+                      <img src={property.floorPlans[selectedConfigIndex].imageUrl || 'https://via.placeholder.com/800x600?text=Floor+Plan'} className="max-w-full max-h-full object-contain" alt={property.floorPlans[selectedConfigIndex].title} />
+                   </div>
+                   <div className="p-10 bg-gray-900 text-white flex flex-col md:flex-row justify-between items-center gap-6">
                       <div>
-                        <h4 className="text-xl font-bold mb-1">{plan.title}</h4>
-                        <p className="text-gray-500 mb-4">{plan.size}</p>
-                        <div className="flex items-center gap-4">
-                          <div className="bg-gray-100 px-4 py-2 rounded-lg">
-                            <p className="text-xs text-gray-500 font-bold uppercase">Price</p>
-                            <p className="text-lg font-bold text-orange-600">{plan.price}</p>
-                          </div>
-                        </div>
+                        <h4 className="text-3xl font-black uppercase tracking-tighter mb-2">{property.floorPlans[selectedConfigIndex].title} Configuration</h4>
+                        <p className="text-orange-400 font-bold uppercase tracking-widest text-xs flex items-center gap-2"><Ruler className="w-4 h-4" /> Area: {property.floorPlans[selectedConfigIndex].size}</p>
                       </div>
-                      <button className="mt-6 flex items-center gap-2 text-orange-600 font-bold hover:gap-3 transition-all">
-                        Request Plan Details <ChevronRight className="w-5 h-5" />
+                      <div className="text-center md:text-right">
+                        <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Starting From</p>
+                        <p className="text-4xl font-black tracking-tighter text-white">{property.floorPlans[selectedConfigIndex].price}</p>
+                      </div>
+                   </div>
+                </div>
+
+                {/* Other Plans Carousel/List */}
+                {property.floorPlans.length > 1 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
+                    {property.floorPlans.map((plan, i) => (
+                      <button 
+                        key={i}
+                        onClick={() => setSelectedConfigIndex(i)}
+                        className={`p-4 border-2 rounded-2xl transition-all text-left ${selectedConfigIndex === i ? 'border-orange-600 bg-orange-50' : 'border-gray-100 bg-white hover:border-gray-300'}`}
+                      >
+                        <p className="font-black uppercase tracking-tighter text-sm mb-1">{plan.title}</p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase">{plan.size}</p>
                       </button>
-                    </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
             </section>
           )}

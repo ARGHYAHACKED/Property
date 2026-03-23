@@ -33,8 +33,11 @@ const AddProperty = () => {
     contactDeveloper: { name: '', phone: '', email: '' }
   });
 
+  const [selectedBHKs, setSelectedBHKs] = useState([]);
+  const BHK_OPTIONS = ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '5 BHK', 'Penthouse', 'Villa'];
+
   const [aroundProject, setAroundProject] = useState([{ category: '', name: '', distance: '' }]);
-  const [floorPlans, setFloorPlans] = useState([{ title: '', size: '', price: '', imageUrl: '' }]);
+  const [floorPlans, setFloorPlans] = useState([]);
   const [tourVideos, setTourVideos] = useState(['']);
   const [amenitiesList, setAmenitiesList] = useState(['']);
   const [images, setImages] = useState([]);
@@ -137,6 +140,23 @@ const AddProperty = () => {
     setPreviewUrls(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleBHKToggle = (bhk) => {
+    setSelectedBHKs(prev => {
+      const isSelected = prev.includes(bhk);
+      const newSelected = isSelected ? prev.filter(item => item !== bhk) : [...prev, bhk];
+      
+      // Sync floorPlans state
+      if (!isSelected) {
+        // Add new floor plan for this BHK if it doesn't exist
+        if (!floorPlans.find(fp => fp.title === bhk)) {
+          setFloorPlans([...floorPlans, { title: bhk, size: '', price: '', imageUrl: '' }]);
+        }
+      }
+      
+      return newSelected;
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -145,10 +165,11 @@ const AddProperty = () => {
     try {
       const submitData = {
         ...formData,
+        configurations: selectedBHKs.join(', '),
         price: parseFloat(formData.price) || 0,
         area: parseFloat(formData.area) || 0,
         aroundProject: aroundProject.filter(item => item.name),
-        floorPlans: floorPlans.filter(item => item.title || item.imageUrl), // Include floor plans with title OR image
+        floorPlans: floorPlans.filter(item => selectedBHKs.includes(item.title)), // Only submit floor plans for selected BHKs
         tourVideos: tourVideos.filter(item => item),
         amenitiesList: amenitiesList.filter(item => item),
         images: images
@@ -258,7 +279,7 @@ const AddProperty = () => {
                   </div>
                   <div className="flex gap-4">
                     <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Total Area</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Total Project Area</label>
                       <input type="number" name="area" value={formData.area} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required />
                     </div>
                     <div className="w-32">
@@ -282,6 +303,24 @@ const AddProperty = () => {
                   <Building className="w-5 h-5" /> Project Specifics
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-3">Project Configurations (Select all that apply)</label>
+                    <div className="flex flex-wrap gap-3">
+                      {BHK_OPTIONS.map(bhk => (
+                        <button
+                          key={bhk}
+                          type="button"
+                          onClick={() => handleBHKToggle(bhk)}
+                          className={`px-6 py-3 rounded-full font-bold uppercase tracking-wider text-xs transition-all border-2 ${selectedBHKs.includes(bhk)
+                              ? 'bg-blue-600 border-blue-600 text-white shadow-md'
+                              : 'bg-white border-gray-200 text-gray-400 hover:border-blue-400'
+                            }`}
+                        >
+                          {bhk}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">RERA ID</label>
                     <input type="text" name="reraId" value={formData.reraId} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
@@ -300,11 +339,7 @@ const AddProperty = () => {
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Size Range (e.g., 1032 - 1351 sq.ft)</label>
-                    <input type="text" name="sizes" value={formData.sizes} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Configurations (e.g., 2, 3 BHK Apartments)</label>
-                    <input type="text" name="configurations" value={formData.configurations} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                    <input type="text" name="sizes" value={formData.sizes} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Auto-populated from floor plans if left blank" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Overview Description</label>
@@ -359,42 +394,80 @@ const AddProperty = () => {
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="bg-white rounded-xl shadow-md p-6">
                 <h2 className="text-xl font-semibold mb-6 flex items-center gap-2 text-indigo-700">
-                  <FileText className="w-5 h-5" /> Floor Plans (Max 4)
+                  <FileText className="w-5 h-5" /> Project Configurations & Floor Plans
                 </h2>
-                <div className="space-y-6">
-                  {floorPlans.map((plan, index) => (
-                    <div key={index} className="p-4 border rounded-xl bg-gray-50 space-y-4">
-                      <div className="flex justify-between items-center">
-                        <h4 className="font-bold text-gray-700">Floor Plan {index + 1}</h4>
-                        {floorPlans.length > 1 && (
-                          <button type="button" onClick={() => removeListItem(index, floorPlans, setFloorPlans)} className="text-red-500 flex items-center gap-1 text-sm font-medium">
-                            <X className="w-4 h-4" /> Remove Plan
-                          </button>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <input type="text" value={plan.title} onChange={(e) => handleObjectListChange(index, 'title', e.target.value, floorPlans, setFloorPlans)} className="px-4 py-2 border rounded-lg outline-none" placeholder="Title" />
-                        <input type="text" value={plan.size} onChange={(e) => handleObjectListChange(index, 'size', e.target.value, floorPlans, setFloorPlans)} className="px-4 py-2 border rounded-lg outline-none" placeholder="Size" />
-                        <input type="text" value={plan.price} onChange={(e) => handleObjectListChange(index, 'price', e.target.value, floorPlans, setFloorPlans)} className="px-4 py-2 border rounded-lg outline-none" placeholder="Price" />
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="flex-1">
-                          <input type="file" accept="image/*" onChange={(e) => handleFloorPlanImageChange(index, e)} className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-                        </div>
-                        {plan.imageUrl && (
-                          <div className="w-20 h-20 rounded-lg overflow-hidden border">
-                            <img src={plan.imageUrl} alt="Floor plan preview" className="w-full h-full object-cover" />
+                
+                {selectedBHKs.length === 0 ? (
+                  <div className="p-12 text-center border-2 border-dashed border-gray-200 rounded-2xl">
+                    <p className="text-gray-400 font-medium">No configurations selected in Step 2.</p>
+                    <button type="button" onClick={() => setCurrentStep(2)} className="text-blue-600 font-bold mt-2 hover:underline">Go back to select BHKs</button>
+                  </div>
+                ) : (
+                  <div className="space-y-8">
+                    {selectedBHKs.map((bhk, index) => {
+                      const planIndex = floorPlans.findIndex(fp => fp.title === bhk);
+                      if (planIndex === -1) return null;
+                      const plan = floorPlans[planIndex];
+
+                      return (
+                        <div key={bhk} className="p-6 border-2 border-gray-100 rounded-2xl bg-white space-y-6 shadow-sm">
+                          <div className="flex justify-between items-center border-b pb-4">
+                            <h4 className="text-lg font-black uppercase tracking-tighter text-blue-900">{bhk} Details</h4>
+                            <span className="bg-blue-50 text-blue-700 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Configuration Active</span>
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  {floorPlans.length < 4 && (
-                    <button type="button" onClick={() => addListItem(floorPlans, setFloorPlans, { title: '', size: '', price: '', imageUrl: '' }, 4)} className="flex items-center gap-1 text-indigo-600 hover:text-indigo-700 font-medium">
-                      <Plus className="w-4 h-4" /> Add Floor Plan (Max 4)
-                    </button>
-                  )}
-                </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Square Footage (e.g., 1250 sq.ft)</label>
+                              <input 
+                                type="text" 
+                                value={plan.size} 
+                                onChange={(e) => handleObjectListChange(planIndex, 'size', e.target.value, floorPlans, setFloorPlans)} 
+                                className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:border-blue-500 outline-none font-bold" 
+                                placeholder="Enter area..." 
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Starting Price (e.g., ₹45 L)</label>
+                              <input 
+                                type="text" 
+                                value={plan.price} 
+                                onChange={(e) => handleObjectListChange(planIndex, 'price', e.target.value, floorPlans, setFloorPlans)} 
+                                className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:border-blue-500 outline-none font-bold" 
+                                placeholder="Enter price..." 
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Upload Floor Plan Image</label>
+                            <div className="flex flex-col md:flex-row items-start gap-6">
+                              <div className="flex-grow w-full">
+                                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:bg-gray-50 hover:border-blue-400 transition-all">
+                                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Select Image File</p>
+                                  </div>
+                                  <input type="file" accept="image/*" onChange={(e) => handleFloorPlanImageChange(planIndex, e)} className="hidden" />
+                                </label>
+                              </div>
+                              {plan.imageUrl && (
+                                <div className="w-full md:w-48 h-32 rounded-2xl overflow-hidden border-4 border-white shadow-xl group relative">
+                                  <img src={plan.imageUrl} alt={`${bhk} floor plan`} className="w-full h-full object-cover" />
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <button type="button" onClick={() => handleObjectListChange(planIndex, 'imageUrl', '', floorPlans, setFloorPlans)} className="p-2 bg-red-500 text-white rounded-full">
+                                      <X className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               <div className="bg-white rounded-xl shadow-md p-6">

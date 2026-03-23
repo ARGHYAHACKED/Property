@@ -76,6 +76,10 @@ const landSchema = new mongoose.Schema({
         name: String,
         phone: String,
         email: String
+    },
+    showInBanner: {
+        type: Boolean,
+        default: false
     }
 });
 

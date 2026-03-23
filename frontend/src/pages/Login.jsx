@@ -52,43 +52,43 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 p-6">
-            <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md transform transition duration-500 hover:scale-105">
-                <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Welcome Back</h2>
-                <p className="text-center text-gray-500 mb-4">
+        <div className="min-h-screen flex items-center justify-center bg-black p-6">
+            <div className="bg-white rounded-none shadow-2xl p-12 w-full max-w-md transform transition duration-500 hover:scale-105 border-t-8 border-black">
+                <h2 className="text-4xl font-black text-center text-black mb-8 uppercase tracking-tighter">Welcome Back</h2>
+                <p className="text-center text-gray-600 mb-8 font-bold uppercase tracking-widest text-xs">
                     {isOtpSent
                         ? "Enter the OTP sent to your phone"
                         : "Enter your phone number to get started"}
                 </p>
 
                 {!isOtpSent ? (
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         <input
                             type="text"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Phone Number"
+                            className="w-full px-4 py-3 border-4 border-black rounded-none shadow-sm focus:outline-none focus:ring-0 placeholder-gray-400 font-bold"
+                            placeholder="PHONE NUMBER"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                         />
                         <button
                             onClick={handleSendOtp}
-                            className="w-full bg-gradient-to-r from-blue-500 to-green-500 text-white py-2 rounded-md hover:from-green-500 hover:to-blue-500 transition duration-300"
+                            className="w-full bg-black text-white py-4 rounded-none font-black uppercase tracking-widest hover:bg-gray-800 transition duration-300 transform hover:scale-105"
                         >
                             Send OTP
                         </button>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         <input
                             type="text"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                            placeholder="Enter OTP"
+                            className="w-full px-4 py-3 border-4 border-black rounded-none shadow-sm focus:outline-none focus:ring-0 placeholder-gray-400 font-bold"
+                            placeholder="ENTER OTP"
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
                         />
                         <button
                             onClick={handleVerifyOtp}
-                            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-md hover:from-pink-500 hover:to-purple-500 transition duration-300"
+                            className="w-full bg-black text-white py-4 rounded-none font-black uppercase tracking-widest hover:bg-gray-800 transition duration-300 transform hover:scale-105"
                         >
                             Verify OTP
                         </button>
@@ -97,7 +97,7 @@ const LoginPage = () => {
 
                 {/* Display messages */}
                 {message && (
-                    <p className="text-center mt-4 text-sm text-gray-700 bg-gray-100 rounded p-2">
+                    <p className="text-center mt-8 text-xs font-black uppercase tracking-widest text-black bg-gray-100 rounded-none p-4 border-2 border-black">
                         {message}
                     </p>
                 )}

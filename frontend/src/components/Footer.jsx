@@ -122,13 +122,13 @@ const Footer = () => {
                 <h4 className="text-lg font-bold text-white mb-4">Subscribe to Our Newsletter</h4>
                 <p className="text-gray-400 text-sm mb-4">Get the latest property updates delivered to your inbox</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-0">
                 <input
                   type="email"
-                  placeholder="Enter your email"
-                  className="flex-1 px-4 py-3 rounded-lg bg-gray-900 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-white border border-gray-700"
+                  placeholder="ENTER YOUR EMAIL"
+                  className="flex-1 px-4 py-3 rounded-none bg-black text-white placeholder-gray-600 focus:outline-none focus:ring-4 focus:ring-white border-4 border-white font-black"
                 />
-                <button className="px-6 py-3 bg-white text-black font-bold rounded-lg hover:shadow-lg transition-all transform hover:scale-105">
+                <button className="px-8 py-3 bg-white text-black font-black uppercase tracking-tighter rounded-none hover:bg-gray-200 transition-all">
                   Subscribe
                 </button>
               </div>
@@ -137,7 +137,7 @@ const Footer = () => {
             {/* Bottom Footer */}
             <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-gray-400 text-sm">
-                © 2024 55acre. All rights reserved.
+                © 2026 55acre. All rights reserved.
               </p>
               <div className="flex gap-6">
                 <Link to="/" className="text-gray-400 hover:text-white text-sm transition-all">Privacy Policy</Link>

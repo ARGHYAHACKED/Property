@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const Admin = require('../models/adminModel');
+const Property = require('../models/propertyModel');
+const Land = require('../models/landModel');
 
 exports.login = async (req, res) => {
     try {
@@ -117,4 +119,53 @@ exports.getAllAdmins = async (req, res) => {
         console.error('Error fetching admins:', error);
         res.status(500).json({ message: "Server error" });
     }
+};
+
+exports.updateBannerStatus = async (req, res) => {
+    try {
+        const { type, id } = req.params;
+        const { showInBanner } = req.body;
+
+        let item;
+        if (type === 'property') {
+            item = await Property.findByIdAndUpdate(id, { showInBanner }, { new: true });
+        } else if (type === 'land') {
+            item = await Land.findByIdAndUpdate(id, { showInBanner }, { new: true });
+        } else {
+            return res.status(400).json({ message: "Invalid type. Must be 'property' or 'land'" });
+        }
+
+        if (!item) {
+            return res.status(404).json({ message: "Item not found" });
+        }
+
+        res.status(200).json({ 
+            message: `Banner status updated for ${type}`, 
+            item 
+        });
+    } catch (error) {
+        console.error('Error updating banner status:', error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+exports.getBannerItems = async (req, res) => {
+    try {
+        const [properties, lands] = await Promise.all([
+            Property.find({ showInBanner: true }),
+            Land.find({ showInBanner: true })
+        ]);
+
+        res.status(200).json({
+            properties,
+            lands
+        });
+    } catch (error) {
+        console.error('Error fetching banner items:', error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+exports.verifyAdmin = (req, res) => {
+    res.status(200).json({ message: "Admin verified" });
 };

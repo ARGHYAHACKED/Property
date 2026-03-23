@@ -7,6 +7,7 @@ import {
   Search, ChevronDown, Eye, Trash2, Edit, Plus
 } from 'lucide-react';
 
+
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
@@ -99,7 +100,8 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = () => {
-    // Clear admin token
+    // Clear admin tokens
+    localStorage.removeItem('adminToken');
     document.cookie = 'adminToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     navigate('/admin/login');
   };

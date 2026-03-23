@@ -55,36 +55,38 @@ const OtpVerify = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form className="bg-white p-6 rounded shadow-md w-96" onSubmit={handleSubmit}>
-        <h2 className="text-2xl font-bold mb-4">Complete Profile</h2>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Name</label>
+    <div className="flex justify-center items-center min-h-screen bg-black p-6">
+      <form className="bg-white p-12 rounded-none shadow-2xl w-full max-w-md border-t-8 border-black transform transition duration-500 hover:scale-105" onSubmit={handleSubmit}>
+        <h2 className="text-4xl font-black text-center text-black mb-8 uppercase tracking-tighter">Complete Profile</h2>
+        {error && <p className="text-red-500 mb-6 text-center font-bold text-xs uppercase tracking-widest">{error}</p>}
+        <div className="mb-8">
+          <label className="block text-gray-600 mb-2 font-bold uppercase tracking-widest text-xs">Name</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="w-full px-4 py-3 border-4 border-black rounded-none shadow-sm focus:outline-none focus:ring-0 placeholder-gray-400 font-bold"
             required
+            placeholder="FULL NAME"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Email</label>
+        <div className="mb-8">
+          <label className="block text-gray-600 mb-2 font-bold uppercase tracking-widest text-xs">Email</label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="w-full px-4 py-3 border-4 border-black rounded-none shadow-sm focus:outline-none focus:ring-0 placeholder-gray-400 font-bold"
             required
+            placeholder="EMAIL ADDRESS"
           />
         </div>
         <button
           type="submit"
-          className={`w-full text-white py-2 rounded ${
-            loading ? "bg-gray-400" : "bg-pink-500 hover:bg-pink-600"
+          className={`w-full py-4 rounded-none font-black uppercase tracking-widest transition duration-300 transform hover:scale-105 ${
+            loading ? "bg-gray-400 text-gray-600 cursor-not-allowed" : "bg-black text-white hover:bg-gray-800"
           }`}
           disabled={loading}
         >

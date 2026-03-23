@@ -43,45 +43,35 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 p-4">
-      {/* Background decorative elements */}
-      <div className="absolute top-0 left-0 w-40 h-40 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-      <div className="absolute top-0 right-0 w-40 h-40 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-      <div className="absolute -bottom-8 left-20 w-40 h-40 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-
+    <div className="min-h-screen flex items-center justify-center bg-black p-6">
       <div className="relative w-full max-w-md">
-        {/* Card Container */}
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden backdrop-blur-lg bg-opacity-95">
-          {/* Header with gradient */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-8">
-            <div className="flex justify-center mb-4">
-              <div className="bg-white bg-opacity-20 p-4 rounded-full">
-                <Lock className="w-8 h-8 text-white" />
+        <div className="bg-white rounded-none shadow-2xl overflow-hidden border-t-8 border-black transform transition duration-500 hover:scale-105">
+          <div className="bg-black px-8 py-12">
+            <div className="flex justify-center mb-6">
+              <div className="bg-white p-4 rounded-none">
+                <Lock className="w-10 h-10 text-black" />
               </div>
             </div>
-            <h1 className="text-3xl font-bold text-center text-white">Admin Portal</h1>
-            <p className="text-blue-100 text-center text-sm mt-2">Secure Access Required</p>
+            <h1 className="text-4xl font-black text-center text-white uppercase tracking-tighter">Admin Access</h1>
+            <p className="text-gray-400 text-center text-xs mt-4 uppercase tracking-widest font-bold font-mono">ENCRYPTED GATEWAY</p>
           </div>
 
-          {/* Form Container */}
-          <div className="px-8 py-8">
-            {/* Error Message */}
+          <div className="px-10 py-12">
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
-                <p className="text-red-700 text-sm font-medium">{error}</p>
+              <div className="mb-8 p-4 bg-gray-100 border-l-8 border-black">
+                <p className="text-black text-xs font-black uppercase tracking-widest">{error}</p>
               </div>
             )}
 
-            <form onSubmit={handleLogin} className="space-y-6">
-              {/* Email Field */}
+            <form onSubmit={handleLogin} className="space-y-8">
               <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-2">Admin Email</label>
+                <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Identifier</label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                  <Mail className="absolute left-4 top-4 w-5 h-5 text-black" />
                   <input
                     type="email"
-                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white"
-                    placeholder="admin@example.com"
+                    className="w-full pl-12 pr-4 py-4 border-4 border-black rounded-none focus:outline-none focus:ring-4 focus:ring-black/5 bg-gray-50 font-bold placeholder-gray-300"
+                    placeholder="ADMINISTRATOR EMAIL"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -89,14 +79,13 @@ const AdminLogin = () => {
                 </div>
               </div>
 
-              {/* Password Field */}
               <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-2">Password</label>
+                <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Secret Key</label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                  <Lock className="absolute left-4 top-4 w-5 h-5 text-black" />
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white"
+                    className="w-full pl-12 pr-12 py-4 border-4 border-black rounded-none focus:outline-none focus:ring-4 focus:ring-black/5 bg-gray-50 font-bold placeholder-gray-300"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -105,36 +94,29 @@ const AdminLogin = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-3.5 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-4 top-4 text-black hover:scale-110 transition-transform"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
               </div>
 
-              {/* Login Button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-400 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105 active:scale-95"
+                className="w-full bg-black text-white font-black py-5 px-4 rounded-none transition-all duration-300 flex items-center justify-center gap-3 uppercase tracking-widest hover:bg-gray-800 disabled:bg-gray-400 transform active:scale-95"
               >
-                <LogIn className="w-5 h-5" />
-                {loading ? 'Logging in...' : 'Login to Dashboard'}
+                <LogIn className="w-6 h-6" />
+                {loading ? 'AUTHENTICATING...' : 'ESTABLISH SESSION'}
               </button>
             </form>
 
-            {/* Footer */}
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <p className="text-center text-gray-600 text-sm">
-                Only authorized administrators can access this portal.
+            <div className="mt-12 pt-8 border-t-2 border-gray-100">
+              <p className="text-center text-gray-400 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
+                LEVEL 7 AUTHORIZATION REQUIRED.<br/>ALL ACTIONS ARE LOGGED AND MONITORED.
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Additional Info Card */}
-        <div className="mt-6 text-center text-white text-sm">
-          <p>For security reasons, make sure you're on a secure connection.</p>
         </div>
       </div>
     </div>

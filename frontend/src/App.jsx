@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -15,17 +15,29 @@ import Land from "./pages/Land";
 import LandDetails from "./pages/LandDetails";
 import Profile from "./pages/Profile";
 import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminLayout from "./layouts/AdminLayout";
+import AdminOverview from "./pages/admin/Dashboard";
+import AdminUsers from "./pages/admin/Users";
+import AdminProperties from "./pages/admin/Properties";
+import AdminLands from "./pages/admin/Lands";
+import AdminMessages from "./pages/admin/Messages";
+import AdminRequests from "./pages/admin/Requests";
+import AdminMarketing from "./pages/admin/Marketing";
+import AdminBannerManagement from "./pages/admin/BannerManagement";
 import Createuser from "./pages/Createuser";
 import SellLand from "./pages/SellLand";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const adminToken = localStorage.getItem("adminToken");
     setIsLoggedIn(!!token);
-  }, []);
+    setIsAdminLoggedIn(!!adminToken);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -39,44 +51,54 @@ const App = () => {
   };
 
   return (
-    <Router>
-      <div className="flex flex-col min-h-screen">
-        <Navbar isLoggedIn={isLoggedIn} />
-        <div className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/property" element={<Property />} />
-            <Route path="/land" element={<Land />} />
-            <Route path="/land/:id" element={<LandDetails />} />
-            <Route path="/add-property" element={<AddProperty />} />
-            <Route path="/add-land" element={<AddLand />} />
-            <Route path="/property-details/:id" element={<PropertyDetails />} />
-            <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/createuser" element={<Createuser />} />
-            <Route
-              path="/profile"
-              element={
-                <UserProtectedRoute>
-                  <Profile onLogout={handleLogout} />
-                </UserProtectedRoute>
-              }
-            />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/sell" element={<SellLand />} />
-            <Route 
-              path="/admin/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } 
-            />
-          </Routes>
-        </div>
-        <Footer />
+    <div className="flex flex-col min-h-screen">
+      {!isAdminLoggedIn && <Navbar isLoggedIn={isLoggedIn} />}
+      <div className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/property" element={<Property />} />
+          <Route path="/land" element={<Land />} />
+          <Route path="/land/:id" element={<LandDetails />} />
+          <Route path="/add-property" element={<AddProperty />} />
+          <Route path="/add-land" element={<AddLand />} />
+          <Route path="/property-details/:id" element={<PropertyDetails />} />
+          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/createuser" element={<Createuser />} />
+          <Route
+            path="/profile"
+            element={
+              <UserProtectedRoute>
+                <Profile onLogout={handleLogout} />
+              </UserProtectedRoute>
+            }
+          />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/sell" element={<SellLand />} />
+          
+          {/* Admin Routes */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            } 
+          >
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<AdminOverview />} />
+            <Route path="user" element={<AdminUsers />} />
+            <Route path="properties" element={<AdminProperties />} />
+            <Route path="lands" element={<AdminLands />} />
+            <Route path="messages" element={<AdminMessages />} />
+            <Route path="requests" element={<AdminRequests />} />
+            <Route path="marketing" element={<AdminMarketing />} />
+            <Route path="marketing/banner" element={<AdminBannerManagement />} />
+          </Route>
+        </Routes>
       </div>
-    </Router>
+      {!isAdminLoggedIn && <Footer />}
+    </div>
   );
 };
 

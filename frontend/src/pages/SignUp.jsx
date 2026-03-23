@@ -63,23 +63,24 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form className="bg-white p-6 rounded shadow-md w-96" onSubmit={handleMobileSubmit}>
-        <h2 className="text-2xl font-bold mb-4">Create Account</h2>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Mobile Number</label>
+    <div className="flex justify-center items-center min-h-screen bg-black p-6">
+      <form className="bg-white p-12 rounded-none shadow-2xl w-full max-w-md border-t-8 border-black transform transition duration-500 hover:scale-105" onSubmit={handleMobileSubmit}>
+        <h2 className="text-4xl font-black text-center text-black mb-8 uppercase tracking-tighter">Create Account</h2>
+        {error && <p className="text-red-500 mb-6 text-center font-bold text-xs uppercase tracking-widest">{error}</p>}
+        <div className="mb-8">
+          <label className="block text-gray-600 mb-2 font-bold uppercase tracking-widest text-xs">Mobile Number</label>
           <input
             type="tel"
             value={mobile}
             onChange={(e) => setMobile(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full px-4 py-3 border-4 border-black rounded-none shadow-sm focus:outline-none focus:ring-0 placeholder-gray-400 font-bold"
             required
+            placeholder="PHONE NUMBER"
           />
         </div>
         <button
           type="submit"
-          className="w-full bg-pink-500 text-white py-2 rounded hover:bg-pink-600"
+          className="w-full bg-black text-white py-4 rounded-none font-black uppercase tracking-widest hover:bg-gray-800 transition duration-300 transform hover:scale-105"
         >
           Get OTP
         </button>
@@ -87,32 +88,33 @@ const SignUp = () => {
 
       {/* OTP Modal */}
       {isOtpModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-6 text-center">Verify OTP</h2>
-            {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
-            <div className="mb-6">
-              <label className="block text-gray-700 mb-2">Enter OTP</label>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white p-12 rounded-none shadow-2xl w-full max-w-md border-t-8 border-black">
+            <h2 className="text-3xl font-black mb-8 text-center text-black uppercase tracking-tighter">Verify OTP</h2>
+            {error && <p className="text-red-500 mb-6 text-center font-bold text-xs uppercase tracking-widest">{error}</p>}
+            <div className="mb-8">
+              <label className="block text-gray-600 mb-2 font-bold uppercase tracking-widest text-xs">Enter OTP</label>
               <input
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full px-4 py-3 border-4 border-black rounded-none shadow-sm focus:outline-none focus:ring-0 placeholder-gray-400 font-bold"
                 required
+                placeholder="ENTER OTP"
               />
             </div>
-            <div className="flex justify-between">
+            <div className="flex flex-col gap-4">
               <button
-                className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition duration-200"
-                onClick={() => setIsOtpModalOpen(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition duration-200"
+                className="w-full bg-black text-white py-4 rounded-none font-black uppercase tracking-widest hover:bg-gray-800 transition duration-300"
                 onClick={handleOtpVerification}
               >
                 Verify
+              </button>
+              <button
+                className="w-full bg-white text-black py-3 rounded-none font-bold uppercase tracking-widest hover:bg-gray-100 transition duration-300 border-2 border-black text-sm"
+                onClick={() => setIsOtpModalOpen(false)}
+              >
+                Cancel
               </button>
             </div>
           </div>

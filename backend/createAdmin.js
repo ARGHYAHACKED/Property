@@ -4,6 +4,8 @@ require('dotenv').config();
 // Import Admin model
 const Admin = require('./models/adminModel');
 
+
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,

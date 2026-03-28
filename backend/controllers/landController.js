@@ -75,21 +75,20 @@ exports.addLand = async (req, res) => {
     }
 };
 
-
-
 exports.getAllLands = async (req, res) => {
     try {
         // Fetch specific fields from the Land model
-        const lands = await Land.find({}, 'title description price location imageUrls');
+        const lands = await Land.find({}, 'title description price location imageUrls showInBanner');
 
         // Modify description to include only the first 15 words
         const updatedLands = lands.map((land) => ({
             id: land._id,
             title: land.title,
-            description: land.description.split(' ').slice(0, 15).join(' ') + '...', // Limit description to 15 words
+            description: land.description ? land.description.split(' ').slice(0, 15).join(' ') + '...' : '', // Limit description to 15 words
             price: land.price,
             location: land.location,
             imageUrl: land.imageUrls && land.imageUrls.length > 0 ? land.imageUrls[0] : null,
+            showInBanner: land.showInBanner || false,
         }));
 
         res.status(200).json(updatedLands); // Return the updated land data
@@ -98,7 +97,6 @@ exports.getAllLands = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-
 
 exports.getLandById = async (req, res) => {
     try {
@@ -119,7 +117,6 @@ exports.getLandById = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-
 
 exports.updateLand = async (req, res) => {
     try {
@@ -277,17 +274,3 @@ exports.getFilterOptions = async (req, res) => {
         });
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-

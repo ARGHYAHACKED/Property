@@ -40,16 +40,18 @@ const BannerManagement = () => {
 
     const toggleBanner = async (type, id, currentStatus) => {
         try {
+            const newStatus = !currentStatus;
+            
             await axios.patch(`${API_BASE_URL}/api/admin/banner/${type}/${id}`, 
-                { showInBanner: !currentStatus }, 
+                { showInBanner: newStatus }, 
                 adminAuth()
             );
             
-            // Optimistic update
+            // Update local state for the specific item only
             if (type === 'property') {
-                setProperties(prev => prev.map(p => p._id === id ? { ...p, showInBanner: !currentStatus } : p));
+                setProperties(prev => prev.map(p => p.id === id ? { ...p, showInBanner: newStatus } : p));
             } else {
-                setLands(prev => prev.map(l => l._id === id ? { ...l, showInBanner: !currentStatus } : l));
+                setLands(prev => prev.map(l => l.id === id ? { ...l, showInBanner: newStatus } : l));
             }
         } catch (error) {
             console.error('Error toggling banner status:', error);
@@ -74,7 +76,7 @@ const BannerManagement = () => {
                     </button>
                     <div>
                         <h2 className="text-5xl font-black uppercase tracking-tighter text-black">Banner Selection</h2>
-                        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mt-1">Select assets to spotlight on the homepage</p>
+                        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mt-1">Select one asset to spotlight on the homepage banner</p>
                     </div>
                 </div>
                 <div className="flex gap-4 w-full md:w-auto">
@@ -100,7 +102,7 @@ const BannerManagement = () => {
                     className={`px-12 py-6 text-sm font-black uppercase tracking-widest transition-all ${activeTab === 'properties' ? 'border-b-8 border-black text-black bg-gray-50' : 'text-gray-400 hover:text-black'}`}
                 >
                     <div className="flex items-center gap-3">
-                        <Home className="w-5 h-5" /> Properties ({properties.filter(p => p.showInBanner).length} Featured)
+                        <Home className="w-5 h-5" /> Properties ({properties.filter(p => p.showInBanner).length} Selected)
                     </div>
                 </button>
                 <button 
@@ -108,7 +110,7 @@ const BannerManagement = () => {
                     className={`px-12 py-6 text-sm font-black uppercase tracking-widest transition-all ${activeTab === 'lands' ? 'border-b-8 border-black text-black bg-gray-50' : 'text-gray-400 hover:text-black'}`}
                 >
                     <div className="flex items-center gap-3">
-                        <Landmark className="w-5 h-5" /> Lands ({lands.filter(l => l.showInBanner).length} Featured)
+                        <Landmark className="w-5 h-5" /> Lands ({lands.filter(l => l.showInBanner).length} Selected)
                     </div>
                 </button>
             </div>
@@ -125,16 +127,16 @@ const BannerManagement = () => {
                     </div>
                 ) : (
                     filteredItems.map(item => (
-                        <div key={item._id} className={`bg-white border-t-8 ${item.showInBanner ? 'border-green-500 ring-8 ring-green-500/10' : 'border-black opacity-80'} rounded-none shadow-2xl overflow-hidden transition-all duration-300 group`}>
+                        <div key={item.id} className={`bg-white border-t-8 ${item.showInBanner ? 'border-green-500 ring-8 ring-green-500/10' : 'border-black opacity-80'} rounded-none shadow-2xl overflow-hidden transition-all duration-300 group`}>
                             <div className="h-56 relative bg-gray-200">
                                 <img 
-                                    src={item.imageUrls?.[0] || item.images?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80'} 
+                                    src={item.imageUrl || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80'} 
                                     alt={item.title} 
                                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                                 />
                                 {item.showInBanner && (
                                     <div className="absolute top-0 right-0 bg-green-500 text-white px-6 py-2 font-black uppercase tracking-widest text-[10px] flex items-center gap-2">
-                                        <CheckCircle className="w-4 h-4"/> Live on Banner
+                                        <CheckCircle className="w-4 h-4"/> Active Banner
                                     </div>
                                 )}
                             </div>
@@ -143,13 +145,13 @@ const BannerManagement = () => {
                                 <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">{item.location}</p>
                                 
                                 <button
-                                    onClick={() => toggleBanner(activeTab === 'properties' ? 'property' : 'land', item._id, item.showInBanner)}
+                                    onClick={() => toggleBanner(activeTab === 'properties' ? 'property' : 'land', item.id, item.showInBanner)}
                                     className={`w-full py-4 px-6 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all transform active:scale-95 ${item.showInBanner ? 'bg-red-500 text-white hover:bg-black' : 'bg-black text-white hover:bg-green-600'}`}
                                 >
                                     {item.showInBanner ? (
-                                        <><Circle className="w-5 h-5" /> Remove from Banner</>
+                                        <><Circle className="w-5 h-5" /> Deselect Banner</>
                                     ) : (
-                                        <><CheckCircle className="w-5 h-5" /> Add to Banner</>
+                                        <><CheckCircle className="w-5 h-5" /> Set as Home Banner</>
                                     )}
                                 </button>
                             </div>

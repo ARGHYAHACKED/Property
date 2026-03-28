@@ -126,6 +126,8 @@ exports.updateBannerStatus = async (req, res) => {
         const { type, id } = req.params;
         const { showInBanner } = req.body;
 
+        // Note: Removed Promise.all block that cleared other items to allow multiple selections.
+
         let item;
         if (type === 'property') {
             item = await Property.findByIdAndUpdate(id, { showInBanner }, { new: true });

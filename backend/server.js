@@ -49,7 +49,7 @@ const corsOptions = {
       callback(new Error('CORS not allowed'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Allow cookies to be sent with the request
 };

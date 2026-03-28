@@ -52,7 +52,7 @@ const App = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {!isAdminLoggedIn && <Navbar isLoggedIn={isLoggedIn} />}
+      <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdminLoggedIn} />
       <div className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -93,11 +93,11 @@ const App = () => {
             <Route path="messages" element={<AdminMessages />} />
             <Route path="requests" element={<AdminRequests />} />
             <Route path="marketing" element={<AdminMarketing />} />
-            <Route path="marketing/banner" element={<AdminBannerManagement />} />
+            <Route path="marketing/webbanner" element={<AdminBannerManagement />} />
           </Route>
         </Routes>
       </div>
-      {!isAdminLoggedIn && <Footer />}
+      <Footer />
     </div>
   );
 };

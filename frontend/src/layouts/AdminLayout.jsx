@@ -61,6 +61,7 @@ const AdminLayout = () => {
         { path: '/admin/lands', icon: Landmark, label: 'Lands' },
         { path: '/admin/messages', icon: MessageSquare, label: 'Messages' },
         { path: '/admin/requests', icon: FileCheck, label: 'Requests' },
+        { path: '/admin/marketing/webbanner', icon: LayoutDashboard, label: 'Banner Property' },
         { path: '/admin/marketing', icon: BarChart3, label: 'Marketing' },
     ];
 

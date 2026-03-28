@@ -66,8 +66,189 @@ const Home = () => {
       {/* Why Choose Us Section */}
       <WhyChooseSection />
 
+      {/* Testimonials Section */}
+      <TestimonialsSection />
+
       {/* CTA Section */}
       <CTASection navigate={navigate} />
+    </div>
+  );
+};
+
+// Testimonials Section Component
+const TestimonialsSection = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const testimonials = [
+    {
+      id: 1,
+      name: "Arindam Das",
+      title: "Land Investor",
+      location: "South Kolkata",
+      image: "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=100&h=100&fit=crop",
+      feedback: "Best land deals in South Kolkata! The verification process for the 55-acre project was incredibly meticulous and transparent.",
+      rating: 5,
+      color: "border-blue-500 bg-blue-50"
+    },
+    {
+      id: 2,
+      name: "Sumit Mukherjee",
+      title: "Business Owner",
+      location: "Siliguri",
+      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop",
+      feedback: "I was looking for a warehouse spot near Siliguri. 55acre provided the perfect plot within my budget. Truly impressed!",
+      rating: 5,
+      color: "border-green-500 bg-green-50"
+    },
+    {
+      id: 3,
+      name: "Anjali Bose",
+      title: "New Homeowner",
+      location: "New Town-Rajarhat",
+      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
+      feedback: "Found my dream apartment in Rajarhat easily. The team helped me with all the documentation. Highly recommended!",
+      rating: 5,
+      color: "border-purple-500 bg-purple-50"
+    },
+    {
+      id: 4,
+      name: "Vikram Chatterjee",
+      title: "Retired Officer",
+      location: "Howrah",
+      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
+      feedback: "Reliable service. They understand the value of honest communication. Getting a plot in Howrah was a seamless experience.",
+      rating: 4,
+      color: "border-orange-500 bg-orange-50"
+    },
+    {
+      id: 5,
+      name: "Sneha Roy",
+      title: "IT Professional",
+      location: "Durgapur",
+      image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop",
+      feedback: "As someone staying away from Durgapur, I needed a trustworthy partner to handle the local property visit. 55acre was perfect.",
+      rating: 5,
+      color: "border-pink-500 bg-pink-50"
+    },
+    {
+      id: 6,
+      name: "Debjyoti Saha",
+      title: "Real Estate Agent",
+      location: "Salt Lake",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+      feedback: "I often refer my clients to 55acre for genuine land listings in the Salt Lake area. Their data accuracy is their strength.",
+      rating: 5,
+      color: "border-indigo-500 bg-indigo-50"
+    },
+    {
+      id: 7,
+      name: "Piyush Ghosh",
+      title: "Teacher",
+      location: "Asansol",
+      image: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&h=100&fit=crop",
+      feedback: "Never thought buying land in Asansol could be this digital and easy. Handheld support throughout the registration.",
+      rating: 5,
+      color: "border-teal-500 bg-teal-50"
+    },
+    {
+      id: 8,
+      name: "Rina Banerjee",
+      title: "Homemaker",
+      location: "Barasat",
+      image: "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=100&h=100&fit=crop",
+      feedback: "Happy with the plot we purchased in Barasat. The community aspect and future development plans for the area are great.",
+      rating: 5,
+      color: "border-red-500 bg-red-50"
+    }
+  ];
+
+  // Auto-rotate every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [testimonials.length]);
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+  };
+
+  // Logic to show up to 3 cards at a time (rotating)
+  const getVisibleTestimonials = () => {
+    const visible = [];
+    const count = window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3;
+    for (let i = 0; i < count; i++) {
+      visible.push(testimonials[(currentIndex + i) % testimonials.length]);
+    }
+    return visible;
+  };
+
+  return (
+    <div className="bg-gray-50 py-20 px-4 sm:px-6 lg:px-8 overflow-hidden relative">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-12 border-l-8 border-black pl-6">
+          <div>
+            <h2 className="text-4xl font-black text-black uppercase tracking-tighter leading-none">Local Trust</h2>
+            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs mt-2">Verified voices from West Bengal, India</p>
+          </div>
+          <div className="flex gap-4 mt-6 md:mt-0">
+            <button onClick={handlePrev} className="p-4 bg-white border-2 border-black hover:bg-black hover:text-white transition-all shadow-md active:scale-95">
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button onClick={handleNext} className="p-4 bg-white border-2 border-black hover:bg-black hover:text-white transition-all shadow-md active:scale-95">
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+
+        {/* Carousel Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[350px]">
+          {getVisibleTestimonials().map((t, index) => (
+            <div 
+              key={`${t.id}-${currentIndex}-${index}`} 
+              className={`p-6 border-t-8 ${t.color} shadow-lg transition-all transform hover:-translate-y-2 flex flex-col justify-between min-h-[320px] bg-opacity-40 backdrop-blur-sm animate-fadeIn`}
+            >
+               <div>
+                  <div className="flex items-center gap-4 mb-4">
+                    <img src={t.image} alt={t.name} className="w-14 h-14 rounded-full border-2 border-black object-cover" />
+                    <div>
+                        <h4 className="font-black uppercase text-sm text-black">{t.name}</h4>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{t.title}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`w-3 h-3 ${i < t.rating ? 'fill-black text-black' : 'text-gray-200'}`} />
+                    ))}
+                  </div>
+                  <p className="text-gray-700 italic text-sm leading-relaxed">"{t.feedback}"</p>
+               </div>
+               <div className="mt-6 flex items-center justify-between border-t border-gray-100 pt-4">
+                  <div className="flex items-center gap-1.5 text-gray-400 text-[10px] font-bold uppercase">
+                    <MapPin className="w-3 h-3" /> {t.location}
+                  </div>
+                  <span className="text-[10px] bg-black text-white px-2 py-0.5 font-black uppercase">Verified Listing</span>
+               </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Indicators */}
+        <div className="flex justify-center gap-2 mt-12">
+          {testimonials.map((_, i) => (
+            <button 
+              key={i} 
+              onClick={() => setCurrentIndex(i)}
+              className={`h-1.5 transition-all duration-500 rounded-full ${i === currentIndex ? 'w-10 bg-black' : 'w-3 bg-gray-200'}`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
@@ -77,26 +258,24 @@ const HeroSection = () => {
   const navigate = useNavigate();
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [properties, setProperties] = useState([]);
-  const [lands, setLands] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchBannerData = async () => {
       try {
-        const [propertiesRes, landsRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/api/properties`),
-          axios.get(`${API_BASE_URL}/api/lands`)
-        ]);
-        const allItems = [...(propertiesRes.data || []), ...(landsRes.data || [])];
-        setProperties(allItems);
-        setLands(landsRes.data || []);
+        const res = await axios.get(`${API_BASE_URL}/api/properties/banner`);
+        if (res.data && Array.isArray(res.data)) {
+          setProperties(res.data);
+        } else if (res.data) {
+          setProperties([res.data]);
+        }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching banner data:', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
+    fetchBannerData();
   }, []);
 
   // Auto-rotate carousel every 5 seconds

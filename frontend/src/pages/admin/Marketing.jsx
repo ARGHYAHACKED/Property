@@ -75,7 +75,7 @@ const AdminMarketing = () => {
             description: 'Homepage dynamic banner sequences and promotional campaign management.',
             lastSync: 'N/A',
             status: 'Standby',
-            link: '/admin/marketing/banner'
+            link: '/admin/marketing/webbanner'
         }
     ];
 

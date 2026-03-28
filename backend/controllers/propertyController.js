@@ -80,16 +80,17 @@ exports.addProperty = async (req, res) => {
 exports.getAllProperties = async (req, res) => {
     try {
         // Fetch specific fields from the Property model
-        const properties = await Property.find({}, 'title description price location imageUrls');
+        const properties = await Property.find({}, 'title description price location imageUrls showInBanner');
 
         // Modify description to include only the first 15 words
         const updatedProperties = properties.map((property) => ({
             id: property._id,
             title: property.title,
-            description: property.description.split(' ').slice(0, 15).join(' ') + '...', // Limit description to 15 words
+            description: property.description ? property.description.split(' ').slice(0, 15).join(' ') + '...' : '', // Limit description to 15 words
             price: property.price,
             location: property.location,
             imageUrl: property.imageUrls && property.imageUrls.length > 0 ? property.imageUrls[0] : null,
+            showInBanner: property.showInBanner || false,
         }));
 
         res.status(200).json(updatedProperties); // Return the updated property data
@@ -280,13 +281,26 @@ exports.getFilterOptions = async (req, res) => {
     }
 };
 
+exports.getHomeBanners = async (req, res) => {
+    try {
+        const Land = require('../models/landModel');
+        const [properties, lands] = await Promise.all([
+            Property.find({ showInBanner: true }),
+            Land.find({ showInBanner: true })
+        ]);
 
+        const bannerItems = [
+            ...properties.map(p => ({ ...p._doc, id: p._id, type: 'property' })),
+            ...lands.map(l => ({ ...l._doc, id: l._id, type: 'land' }))
+        ];
 
+        if (bannerItems.length === 0) {
+            return res.status(404).json({ message: 'No banner items selected' });
+        }
 
-
-
-
-
-
-
-
+        res.status(200).json(bannerItems);
+    } catch (error) {
+        console.error('Error fetching home banners:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};

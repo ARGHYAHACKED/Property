@@ -6,12 +6,17 @@ const {
     updateProperty,
     deleteProperty,
     getFilterOptions,
+    getHomeBanners,
 } = require('../controllers/propertyController');
+
 const { authenticate } = require('../middlewares/authMiddleware');
 const upload = require('../config/multer'); // For file uploads
 const { verifyAdmin } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
+
+// Public Banner route (must be before :id)
+router.get('/banner', getHomeBanners);
 
 // Create a property (protected route)
 router.post('/', upload.array('images', 10), addProperty); // Allow up to 10 images

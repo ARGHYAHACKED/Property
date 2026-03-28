@@ -5,10 +5,21 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import API_BASE_URL from '../config/api';
 
-const Navbar = () => {
+const Navbar = ({ isLoggedIn: propIsLoggedIn, isAdmin }) => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn || false);
+
+  useEffect(() => {
+    setIsLoggedIn(propIsLoggedIn);
+  }, [propIsLoggedIn]);
+  
+  // Also check for admin status if not passed explicitly (fallback)
+  const [internalIsAdmin, setInternalIsAdmin] = useState(isAdmin || !!localStorage.getItem("adminToken"));
+
+  useEffect(() => {
+    setInternalIsAdmin(isAdmin || !!localStorage.getItem("adminToken"));
+  }, [isAdmin, location.pathname]);
 
   useEffect(() => {
     const checkAuthStatus = async () => {
@@ -32,12 +43,13 @@ const Navbar = () => {
           Cookies.remove("token");
         }
       } else {
-        setIsLoggedIn(false);
+        // Only set false if it wasn't already set true by props
+        if (!propIsLoggedIn) setIsLoggedIn(false);
       }
     };
 
     checkAuthStatus();
-  }, [location.pathname]);
+  }, [location.pathname, propIsLoggedIn]);
 
   const getActiveLink = (link) => {
     if (link === "Home" && location.pathname === "/") return true;
@@ -65,7 +77,7 @@ const Navbar = () => {
       </button>
 
       {/* Navigation Links for Medium and Larger Screens */}
-      <div className="hidden md:flex gap-8">
+      <div className="hidden md:flex gap-8 items-center">
         <ul className="flex gap-8">
           {["Home", "Property", "Land"].map((link) => (
             <li
@@ -83,7 +95,14 @@ const Navbar = () => {
           ))}
         </ul>
         <div className="flex gap-4">
-          {isLoggedIn ? (
+          {internalIsAdmin ? (
+            <Link
+              to="/admin"
+              className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 transition font-bold uppercase tracking-wider text-sm flex items-center"
+            >
+              Admin Dashboard
+            </Link>
+          ) : isLoggedIn ? (
             <Link
               to="/profile"
               className="bg-white text-black p-2 rounded-full hover:bg-gray-200 transition flex items-center font-semibold"
@@ -135,7 +154,15 @@ const Navbar = () => {
           ))}
         </ul>
         <div className="flex flex-col mt-8 space-y-4 pl-6">
-          {isLoggedIn ? (
+          {internalIsAdmin ? (
+            <Link
+              to="/admin"
+              className="bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition flex items-center font-bold uppercase tracking-wider text-sm w-fit"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Admin Dashboard
+            </Link>
+          ) : isLoggedIn ? (
             <Link
               to="/profile"
               className="bg-white text-black px-4 py-2 rounded-full hover:bg-gray-200 transition flex items-center font-semibold"
@@ -148,14 +175,14 @@ const Navbar = () => {
             <>
               <Link
                 to="/login"
-                className="bg-transparent border-2 border-white text-white px-4 py-1 rounded hover:bg-white hover:text-black transition font-semibold"
+                className="bg-transparent border-2 border-white text-white px-4 py-1 rounded hover:bg-white hover:text-black transition font-semibold w-fit"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Login
               </Link>
               <Link
                 to="/signup"
-                className="bg-white text-black px-4 py-1 rounded hover:bg-gray-200 transition font-semibold"
+                className="bg-white text-black px-4 py-1 rounded hover:bg-gray-200 transition font-semibold w-fit"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Sign Up

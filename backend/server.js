@@ -17,6 +17,7 @@ const messageRoutes = require("./routes/messageRoutes");
 
 
 const RequestRoutes = require('./routes/requestRoutes');
+const leadRoutes = require('./routes/leadRoutes');
 
 // Existing routes
 // New route for land requests
@@ -87,6 +88,7 @@ app.use('/api/admin', adminRoutes); // Admin routes
 app.use("/api/messages", messageRoutes);
 app.use('/api/land-request', requestLandRoutes); // Land request routes
 app.use('/api/request', RequestRoutes); // Additional request routes
+app.use('/api/leads', leadRoutes); // Lead capture routes
 
 // Start server
 const PORT = process.env.PORT || 5001;

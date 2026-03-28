@@ -26,6 +26,8 @@ import AdminMarketing from "./pages/admin/Marketing";
 import AdminBannerManagement from "./pages/admin/BannerManagement";
 import Createuser from "./pages/Createuser";
 import SellLand from "./pages/SellLand";
+import LeadPopup from "./components/LeadPopup";
+import AdminLeads from "./pages/admin/Leads";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -53,6 +55,7 @@ const App = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdminLoggedIn} />
+      <LeadPopup />
       <div className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -94,6 +97,7 @@ const App = () => {
             <Route path="requests" element={<AdminRequests />} />
             <Route path="marketing" element={<AdminMarketing />} />
             <Route path="marketing/webbanner" element={<AdminBannerManagement />} />
+            <Route path="leads" element={<AdminLeads />} />
           </Route>
         </Routes>
       </div>

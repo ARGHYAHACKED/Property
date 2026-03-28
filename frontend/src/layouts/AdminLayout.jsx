@@ -3,7 +3,7 @@ import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { 
   BarChart3, Users, Home, Landmark, MessageSquare, 
   FileCheck, LogOut, ChevronLeft, ChevronRight, LayoutDashboard,
-  Menu, X
+  Menu, X, ClipboardList
 } from 'lucide-react';
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
@@ -61,6 +61,7 @@ const AdminLayout = () => {
         { path: '/admin/lands', icon: Landmark, label: 'Lands' },
         { path: '/admin/messages', icon: MessageSquare, label: 'Messages' },
         { path: '/admin/requests', icon: FileCheck, label: 'Requests' },
+        { path: '/admin/leads', icon: ClipboardList, label: 'Lead Data' },
         { path: '/admin/marketing/webbanner', icon: LayoutDashboard, label: 'Banner Property' },
         { path: '/admin/marketing', icon: BarChart3, label: 'Marketing' },
     ];

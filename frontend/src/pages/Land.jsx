@@ -279,40 +279,38 @@ const Land = () => {
               className="w-full border border-gray-300 p-2 rounded"
             />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredLands.map((land, index) => (
-              <React.Fragment key={land._id}>
-                <div
-                  className="bg-white p-4 shadow rounded-lg hover:shadow-lg transition-all border-2 border-gray-200 hover:border-black"
-                >
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+            {filteredLands.map((land) => (
+              <div
+                key={land._id || land.id}
+                onClick={() => handleLandClick(land)}
+                className="bg-white p-3 md:p-4 shadow-sm hover:shadow-2xl transition-all border border-gray-100 hover:border-black rounded-none cursor-pointer flex flex-col group h-full"
+              >
+                <div className="overflow-hidden h-32 md:h-48 rounded-none mb-3">
                   <img
-                    src={land.imageUrl || "https://via.placeholder.com/150"}
+                    src={land.imageUrl || "https://via.placeholder.com/400x300"}
                     alt={land.title}
-                    className="w-full h-48 object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => handleLandClick(land)}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <h5 className="text-lg font-bold mt-2">{land.title}</h5>
-                  <p className="text-gray-600 text-sm mb-2 line-clamp-2">{land.description}</p>
-                  <p className="text-xl font-bold text-black mb-1">
-                    {land.avgPrice || formatPrice(land.price)}
-                  </p>
-                  <p className="text-gray-700 text-sm mb-3">📍 {land.location}</p>
-
-                  {/* View Details Button */}
-                  <button
-                    onClick={() => handleLandClick(land)}
-                    className="w-full bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg transition-all mt-3"
-                  >
-                    View Details
-                  </button>
                 </div>
-
-                {/* Add blank space after every two cards on small screens */}
-                {index % 2 === 1 && (
-                  <div className="sm:hidden block h-[250px] "></div>
-                )}
-              </React.Fragment>
+                <h5 className="text-xs md:text-lg font-black uppercase tracking-tight line-clamp-1">{land.title}</h5>
+                <p className="hidden md:block text-gray-500 text-xs mb-2 line-clamp-2 font-medium">{land.description}</p>
+                <div className="mt-auto">
+                    <p className="text-sm md:text-xl font-black text-black mb-1">
+                    {land.avgPrice || formatPrice(land.price)}
+                    </p>
+                    <p className="text-[10px] md:text-sm font-bold uppercase tracking-widest text-gray-400 truncate">📍 {land.location}</p>
+                    
+                    <button
+                    onClick={(e) => { e.stopPropagation(); handleLandClick(land); }}
+                    className="hidden md:block w-full bg-black hover:bg-gray-800 text-white font-black uppercase tracking-widest py-2 px-4 transition-all mt-4 text-xs"
+                    >
+                    View Details
+                    </button>
+                </div>
+              </div>
             ))}
+
             {filteredLands.length === 0 && (
               <p className="text-center col-span-full text-gray-500">
                 No lands found.

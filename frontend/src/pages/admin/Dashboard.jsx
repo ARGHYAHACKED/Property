@@ -6,25 +6,26 @@ import API_BASE_URL from '../../config/api';
 
 const StatCard = ({ title, value, icon: Icon, color, trend }) => {
     return (
-        <div className="bg-white p-8 rounded-none border-t-8 border-black shadow-2xl hover:scale-105 transition-transform">
-            <div className="flex justify-between items-start mb-4">
-                <div className={`p-4 ${color} text-white`}>
-                    <Icon className="w-8 h-8" />
+        <div className="bg-white p-6 rounded-none border-t-8 border-black shadow-lg hover:shadow-2xl transition-all h-full flex flex-col justify-between">
+            <div className="flex justify-between items-start mb-6">
+                <div className={`p-3 ${color} text-white`}>
+                    <Icon className="w-6 h-6" />
                 </div>
                 {trend && (
-                    <div className={`flex items-center gap-1 text-xs font-black uppercase tracking-widest ${trend > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {trend > 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                    <div className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-widest ${trend > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {trend > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                         {Math.abs(trend)}%
                     </div>
                 )}
             </div>
             <div>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">{title}</p>
-                <p className="text-5xl font-black text-black uppercase tracking-tighter">{value.toLocaleString()}</p>
+                <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">{title}</p>
+                <p className="text-3xl font-black text-black uppercase tracking-tighter">{value.toLocaleString()}</p>
             </div>
         </div>
     );
 };
+
 
 const AdminOverview = () => {
     const { stats } = useOutletContext();
@@ -62,8 +63,8 @@ const AdminOverview = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
-                <div className="bg-white p-12 rounded-none border-t-8 border-black shadow-2xl">
-                    <h2 className="text-3xl font-black uppercase tracking-tighter text-black mb-8 border-b-4 border-black pb-4 inline-block">
+                <div className="bg-white p-6 md:p-8 rounded-none border-t-8 border-black shadow-lg">
+                    <h2 className="text-xl font-black uppercase tracking-tighter text-black mb-6 border-b-2 border-black pb-2 inline-block">
                         Recent User Registrations
                     </h2>
                     <div className="overflow-x-auto">

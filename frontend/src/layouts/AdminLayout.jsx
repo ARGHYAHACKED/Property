@@ -125,9 +125,9 @@ const AdminLayout = () => {
 
             {/* Main Content Area */}
             <main className={`flex-grow transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'} min-h-screen flex flex-col`}>
-                <header className="bg-white border-b-4 border-black sticky top-0 z-40 h-20 flex items-center px-8 justify-between">
+                <header className="bg-white border-b-2 border-black sticky top-0 z-40 h-16 flex items-center px-8 justify-between shadow-sm">
                     <div>
-                        <h2 className="text-2xl font-black uppercase tracking-tighter text-black">
+                        <h2 className="text-xl font-black uppercase tracking-tighter text-black">
                             {sidebarItems.find(item => location.pathname.includes(item.path))?.label || 'Dashboard'}
                         </h2>
                     </div>

@@ -305,46 +305,37 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="relative w-full h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 overflow-hidden">
+    <div className="relative w-full min-h-screen lg:h-screen bg-black overflow-hidden flex flex-col">
       {/* Background Image from Carousel */}
       {properties.length > 0 && currentProperty && (
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 h-full">
           <img
-            src={currentProperty.imageUrl || currentProperty.imageUrls?.[0] || 'https://via.placeholder.com/1920x1080'}
+            src={currentProperty.imageUrls?.[0] || 'https://via.placeholder.com/1920x1080'}
             alt="Hero Background"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover opacity-40 lg:opacity-100"
           />
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent lg:bg-black/50"></div>
         </div>
       )}
 
-      {/* Animated background elements (fallback) */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-gray-700 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gray-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-20 w-96 h-96 bg-gray-700 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
-      </div>
-
       {/* Content */}
-      <div className="relative h-full flex items-center justify-center px-4 sm:px-6 lg:px-8 z-10">
+      <div className="relative flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8 z-10 pt-24 pb-12 lg:pt-0 lg:pb-0">
         <div className="w-full max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
-            <div className="text-left">
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 animate-fadeInDown">
-                Discover Premium Land & Properties
+            <div className="text-center lg:text-left order-2 lg:order-1">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white mb-6 uppercase tracking-tighter leading-[0.9]">
+                Premium <br className="hidden lg:block"/> Land & Properties
               </h1>
-              <p className="text-xl sm:text-2xl text-gray-200 mb-8 animate-fadeInUp">
-                Explore 55 acres of premium properties and land listings from verified sellers
+              <p className="text-lg sm:text-xl text-gray-300 mb-8 font-medium max-w-xl mx-auto lg:mx-0">
+                Explore 55 acres of premium properties and land listings from verified sellers across West Bengal.
               </p>
 
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 animate-fadeInUp">
-                <button onClick={() => navigate('/property')} className="px-8 py-4 bg-white text-black font-bold rounded-lg hover:shadow-2xl transition-all transform hover:scale-105">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <button onClick={() => navigate('/property')} className="px-8 py-4 bg-white text-black font-black uppercase tracking-widest hover:bg-gray-200 transition-all transform active:scale-95">
                   Explore Properties
                 </button>
-                <button onClick={() => navigate('/land')} className="px-8 py-4 bg-gray-700 text-white font-bold rounded-lg hover:bg-gray-800 transition-all transform hover:scale-105 border-2 border-white">
+                <button onClick={() => navigate('/land')} className="px-8 py-4 bg-transparent text-white font-black uppercase tracking-widest border-2 border-white hover:bg-white/10 transition-all transform active:scale-95">
                   View Lands
                 </button>
               </div>
@@ -352,89 +343,52 @@ const HeroSection = () => {
 
             {/* Right Content - Carousel & Property Card */}
             {properties.length > 0 && currentProperty && (
-              <div className="flex flex-col gap-4 items-end">
-                {/* Carousel Container - smaller */}
-                <div className="relative rounded-xl overflow-hidden shadow-xl h-52 w-80 group">
-                  {/* Carousel Images */}
+              <div className="w-full max-w-md mx-auto lg:mr-0 flex flex-col gap-0 items-center lg:items-end order-1 lg:order-2 animate-fadeInRight">
+                {/* Carousel Container */}
+                <div className="relative overflow-hidden shadow-2xl h-48 sm:h-56 w-full lg:w-80 group border-x-4 border-t-4 border-white">
                   <div className="relative w-full h-full">
-                    {currentProperty.imageUrls && currentProperty.imageUrls.length > 0 ? (
-                      <>
-                        <img
-                          src={currentProperty.imageUrls[0]}
-                          alt={currentProperty.title}
-                          className="w-full h-full object-cover"
-                        />
-                        {currentProperty.imageUrls.length > 1 && (
-                          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 px-4">
-                            {currentProperty.imageUrls.slice(0, 5).map((_, idx) => (
-                              <div
-                                key={idx}
-                                className={`h-2 rounded-full transition-all ${idx === 0 ? 'w-6 bg-white' : 'w-2 bg-gray-300'
-                                  }`}
-                              />
-                            ))}
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <img
-                        src="https://via.placeholder.com/600x400"
-                        alt="Placeholder"
-                        className="w-full h-full object-cover"
-                      />
-                    )}
+                    <img
+                      src={currentProperty.imageUrls?.[0] || 'https://via.placeholder.com/600x400'}
+                      alt={currentProperty.title}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-
-                  {/* Navigation Arrows */}
-                  <button
-                    onClick={handlePrevious}
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-3 rounded-full transition-all z-20 opacity-0 group-hover:opacity-100"
-                  >
-                    <ChevronLeft className="w-6 h-6" />
-                  </button>
-                  <button
-                    onClick={handleNext}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-3 rounded-full transition-all z-20 opacity-0 group-hover:opacity-100"
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </button>
-
-                  {/* Carousel Counter */}
-                  <div className="absolute top-4 right-4 bg-black bg-opacity-75 text-white px-3 py-1 rounded-full text-sm font-bold">
+                  <div className="absolute top-4 right-4 bg-white text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest">
                     {carouselIndex + 1} / {properties.length}
                   </div>
                 </div>
 
-                {/* Property Details Card - compact */}
-                <div className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-xl max-w-sm">
-                  <h3 className="text-lg font-bold text-black mb-1 line-clamp-1">{currentProperty.title}</h3>
-                  <div className="flex items-center gap-1.5 text-gray-600 text-sm mb-2">
-                    <MapPin className="w-4 h-4 shrink-0" />
+                {/* Property Details Card */}
+                <div className="bg-white p-6 shadow-2xl w-full lg:w-80 border-x-4 border-b-4 border-white lg:border-t-0">
+                  <h3 className="text-base font-black text-black uppercase tracking-tight mb-1 truncate">{currentProperty.title}</h3>
+                  <div className="flex items-center gap-1.5 text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-3">
+                    <MapPin className="w-3 h-3 shrink-0" />
                     <span className="truncate">{currentProperty.location}</span>
                   </div>
-                  <p className="text-xl font-bold text-black mb-2">
+                  <p className="text-xl font-black text-black mb-4">
                     {currentProperty.avgPrice || formatPrice(currentProperty.price)}
                   </p>
-                  <p className="text-gray-600 text-xs line-clamp-2 mb-3">{currentProperty.description}</p>
                   <button
                     onClick={() => navigate(`/property-details/${currentProperty.id || currentProperty._id}`)}
-                    className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-2 rounded-lg text-sm flex items-center justify-center gap-1"
+                    className="w-full bg-black text-white font-black uppercase tracking-widest py-3 hover:bg-gray-800 transition-all flex items-center justify-center gap-2 group text-xs"
                   >
-                    View Full Details
-                    <ChevronRight className="w-4 h-4" />
+                    View Details
+                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
-              </div>
-            )}
-
-            {loading && (
-              <div className="text-center text-white">
-                <p className="text-lg">Loading featured properties...</p>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {loading && (
+        <div className="absolute inset-0 bg-black flex items-center justify-center z-50">
+          <div className="text-center text-white">
+            <p className="text-lg font-black uppercase tracking-widest animate-pulse">Loading Premium Content...</p>
+          </div>
+        </div>
+      )}
 
       {/* Scroll Down Indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
@@ -444,13 +398,14 @@ const HeroSection = () => {
   );
 };
 
+
 // Stats Section Component
 const StatsSection = () => {
   const stats = [
-    { icon: HomeIcon, label: 'Properties', value: '2,400+' },
-    { icon: Landmark, label: 'Lands', value: '1,200+' },
-    { icon: Users, label: 'Happy Clients', value: '5,000+' },
-    { icon: TrendingUp, label: 'Growth', value: '+45%' }
+    { icon: HomeIcon, label: 'Properties', value: '0' },
+    { icon: Landmark, label: 'Lands', value: '0' },
+    { icon: Users, label: 'Happy Clients', value: '0' },
+    { icon: TrendingUp, label: 'Growth', value: '0%' }
   ];
 
   return (
@@ -493,7 +448,7 @@ const FeaturedSection = ({ title, items, type, navigate }) => {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
           {items.map((item) => (
             <PropertyCard key={item.id || item._id} item={item} type={type} navigate={navigate} />
           ))}
@@ -517,49 +472,41 @@ const PropertyCard = ({ item, type, navigate }) => {
   return (
     <div
       onClick={() => navigate(detailsPath)}
-      className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer border-2 border-gray-200 hover:border-black"
+      className="bg-white rounded-none overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer border border-gray-100 hover:border-black group h-full flex flex-col"
     >
       {/* Image Container */}
-      <div className="relative h-64 bg-gray-200 overflow-hidden group">
+      <div className="relative h-32 sm:h-48 md:h-64 bg-gray-200 overflow-hidden">
         <img
           src={item.imageUrl || item.imageUrls?.[0] || 'https://via.placeholder.com/400x300'}
           alt={item.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        <div className="absolute top-4 right-4 bg-black text-white px-3 py-1 rounded-full text-sm font-bold">
+        <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-black text-white px-2 py-0.5 sm:px-3 sm:py-1 text-[8px] sm:text-xs font-black uppercase tracking-widest">
           {type === 'property' ? 'Property' : 'Land'}
-        </div>
-        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-end p-4">
-          <button className="w-full bg-white text-black py-2 rounded-lg font-bold opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100">
-            View Details
-          </button>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-6">
-        <h3 className="text-xl font-bold text-black mb-2">{item.title}</h3>
+      <div className="p-3 sm:p-6 flex-grow flex flex-col">
+        <h3 className="text-xs sm:text-xl font-black text-black uppercase tracking-tight mb-1 sm:mb-2 line-clamp-1">{item.title}</h3>
 
         {/* Location */}
-        <div className="flex items-center gap-2 text-gray-700 mb-4">
-          <MapPin className="w-4 h-4" />
-          <p className="text-sm">{item.location}</p>
+        <div className="flex items-center gap-1 sm:gap-2 text-gray-400 mb-2 sm:mb-4">
+          <MapPin className="w-2 h-2 sm:w-4 sm:h-4" />
+          <p className="text-[8px] sm:text-sm font-bold uppercase tracking-widest truncate">{item.location}</p>
         </div>
 
-        {/* Description */}
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">{item.description}</p>
+        {/* Description - Hidden on small mobile to keep 2-column clean */}
+        <p className="hidden sm:block text-gray-500 text-sm mb-4 line-clamp-2 font-medium">{item.description}</p>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t-2 border-gray-200">
-          <div className="flex items-center gap-2">
-            <DollarSign className="w-4 h-4 text-black" />
-            <p className="text-lg font-bold text-black">
+        <div className="mt-auto pt-2 sm:pt-4 border-t border-gray-100 flex items-center justify-between">
+            <p className="text-[10px] sm:text-lg font-black text-black uppercase tracking-tight">
               {item.avgPrice || formatPrice(item.price)}
             </p>
-          </div>
-          {type === 'land' && (
-            <span className="text-sm text-gray-700 font-semibold">{item.area} acres</span>
-          )}
+            {type === 'land' && (
+              <span className="hidden sm:block text-[10px] text-gray-400 font-bold uppercase tracking-widest">{item.area} ac</span>
+            )}
         </div>
       </div>
     </div>

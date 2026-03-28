@@ -28,6 +28,7 @@ import Createuser from "./pages/Createuser";
 import SellLand from "./pages/SellLand";
 import LeadPopup from "./components/LeadPopup";
 import AdminLeads from "./pages/admin/Leads";
+import CustomCursor from "./components/CustomCursor";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -40,6 +41,8 @@ const App = () => {
     setIsLoggedIn(!!token);
     setIsAdminLoggedIn(!!adminToken);
   }, [location.pathname]);
+
+  const isAdminPath = location.pathname.startsWith('/admin');
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -54,8 +57,9 @@ const App = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdminLoggedIn} />
-      <LeadPopup />
+      <CustomCursor />
+      {!isAdminPath && <Navbar isLoggedIn={isLoggedIn} isAdmin={isAdminLoggedIn} />}
+      {!isAdminPath && <LeadPopup />}
       <div className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -101,7 +105,7 @@ const App = () => {
           </Route>
         </Routes>
       </div>
-      <Footer />
+      {!isAdminPath && <Footer />}
     </div>
   );
 };

@@ -60,7 +60,7 @@ const AdminRequests = () => {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <div className="bg-black text-white p-1"><Phone className="w-4 h-4"/></div>
-                                            <p className="font-bold text-gray-500 uppercase tracking-widest text-xs leading-none">{r.userId?.mobile || 'N/A'}</p>
+                                            <p className="font-bold text-gray-500 uppercase tracking-widest text-xs leading-none">{r.userId?.phone || 'N/A'}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">

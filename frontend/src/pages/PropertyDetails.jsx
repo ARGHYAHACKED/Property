@@ -76,6 +76,25 @@ const PropertyDetails = () => {
     sectionRefs[section]?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const getYouTubeEmbedUrl = (url) => {
+    if (!url) return '';
+    let videoId = '';
+    
+    if (url.includes('youtube.com/watch')) {
+      const urlParams = new URLSearchParams(new URL(url).search);
+      videoId = urlParams.get('v');
+    } else if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1].split('?')[0];
+    } else if (url.includes('youtube.com/embed/')) {
+      return url;
+    } else if (url.includes('m.youtube.com/watch')) {
+      const urlParams = new URL(url).searchParams;
+      videoId = urlParams.get('v');
+    }
+
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+  };
+
   const formatPrice = (price) => {
     if (!price) return 'Price on Request';
     if (price >= 10000000) return `₹${(price / 10000000).toFixed(2)} Cr`;
@@ -177,9 +196,14 @@ const PropertyDetails = () => {
             <p className="text-2xl font-bold text-orange-400">{property.avgPrice || formatPrice(property.price)}</p>
           </div>
           <div className="md:col-span-1">
-            <button className="w-full bg-orange-600 hover:bg-orange-700 text-white h-12 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors">
-              <PhoneCall className="w-5 h-5" /> Contact Seller
-            </button>
+            <a 
+              href="https://wa.me/918768380240?text=I%20am%20interested" 
+              target="_blank" 
+              rel="noreferrer" 
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white h-12 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors"
+            >
+              <MessageSquare className="w-5 h-5" /> Contact Seller
+            </a>
           </div>
         </div>
       </div>
@@ -393,7 +417,7 @@ const PropertyDetails = () => {
                   <div key={i} className="relative aspect-video rounded-2xl overflow-hidden border bg-black shadow-lg shadow-orange-900/10">
                     <iframe
                       className="w-full h-full"
-                      src={url.includes('youtube.com') ? url.replace('watch?v=', 'embed/') : url}
+                      src={getYouTubeEmbedUrl(url)}
                       title="Tour Video"
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -450,12 +474,22 @@ const PropertyDetails = () => {
               <div className="space-y-4">
                 <p className="text-sm text-gray-600 font-medium">I'm interested in this project and would like to schedule a site visit.</p>
                 <div className="grid grid-cols-1 gap-3">
-                  <button className="w-full bg-gray-900 hover:bg-black text-white h-14 rounded-2xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95">
-                    <PhoneCall className="w-5 h-5" /> View Phone Number
-                  </button>
-                  <button className="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-50 h-14 rounded-2xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95">
-                    <MessageSquare className="w-5 h-5" /> Send Message
-                  </button>
+                  <a 
+                    href="https://wa.me/918768380240?text=I%20am%20interested" 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="w-full bg-gray-900 hover:bg-black text-white h-14 rounded-2xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95"
+                  >
+                    <MessageSquare className="w-5 h-5" /> Contact Seller
+                  </a>
+                  <a 
+                    href="https://wa.me/918768380240?text=I%20am%20interested" 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-50 h-14 rounded-2xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95"
+                  >
+                    <MessageSquare className="w-5 h-5" /> Send WhatsApp
+                  </a>
                 </div>
               </div>
 
@@ -475,7 +509,7 @@ const PropertyDetails = () => {
             <div className="bg-gradient-to-br from-orange-600 to-red-600 rounded-3xl p-8 text-white shadow-xl shadow-orange-300">
               <h4 className="text-xl font-bold mb-2">EMI Starts @ {property.emiStarts || '₹45K/mo'}</h4>
               <p className="text-orange-100 text-sm mb-6 opacity-90">Interested in getting home loan assistance? We have tied up with multiple banks.</p>
-              <button className="w-full bg-white text-orange-600 h-12 rounded-xl font-bold hover:bg-orange-50 transition-colors">Apply Now</button>
+              {/* <button className="w-full bg-white text-orange-600 h-12 rounded-xl font-bold hover:bg-orange-50 transition-colors">Apply Now</button> */}
             </div>
 
           </div>

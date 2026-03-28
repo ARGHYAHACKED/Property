@@ -32,7 +32,7 @@ module.exports = {
         message: "Request created successfully",
         data: {
           _id: newRequest._id,
-          user: { name: user.name, mobile: user.mobile },
+          user: { name: user.name, phone: user.phone },
           property: { title: property.title, location: property.location },
           createdAt: newRequest.createdAt,
         },
@@ -45,7 +45,7 @@ module.exports = {
   getLandRequests: async (req, res) => {
     try {
       const requests = await LandRequest.find()
-        .populate("userId", "name mobile") // Fetch name and mobile from User
+        .populate("userId", "name phone") // Fetch name and phone from User
         .populate("landId", "title location"); // Fetch title and location from Land
 
       res.status(200).json({

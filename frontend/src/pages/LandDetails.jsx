@@ -72,6 +72,25 @@ const LandDetails = () => {
     sectionRefs[section]?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const getYouTubeEmbedUrl = (url) => {
+    if (!url) return '';
+    let videoId = '';
+    
+    if (url.includes('youtube.com/watch')) {
+      const urlParams = new URLSearchParams(new URL(url).search);
+      videoId = urlParams.get('v');
+    } else if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1].split('?')[0];
+    } else if (url.includes('youtube.com/embed/')) {
+      return url;
+    } else if (url.includes('m.youtube.com/watch')) {
+      const urlParams = new URL(url).searchParams;
+      videoId = urlParams.get('v');
+    }
+
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+  };
+
   const formatPrice = (price) => {
     if (!price) return 'Price on Request';
     if (price >= 10000000) return `₹${(price / 10000000).toFixed(2)} Cr`;
@@ -177,9 +196,14 @@ const LandDetails = () => {
             <p className="text-2xl font-bold text-green-400">{land.avgPrice || formatPrice(land.price)}</p>
           </div>
           <div className="md:col-span-1">
-            <button className="w-full bg-green-600 hover:bg-green-700 text-white h-12 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors">
-              <PhoneCall className="w-5 h-5" /> Contact Owner
-            </button>
+            <a 
+              href="https://wa.me/918768380240?text=I%20am%20interested" 
+              target="_blank" 
+              rel="noreferrer" 
+              className="w-full bg-green-600 hover:bg-green-700 text-white h-12 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors uppercase"
+            >
+              <MessageSquare className="w-5 h-5" /> Contact Owner
+            </a>
           </div>
         </div>
       </div>
@@ -327,7 +351,7 @@ const LandDetails = () => {
                   <div key={i} className="relative aspect-video rounded-2xl overflow-hidden border bg-black shadow-lg">
                     <iframe
                       className="w-full h-full"
-                      src={url.includes('youtube.com') ? url.replace('watch?v=', 'embed/') : url}
+                      src={getYouTubeEmbedUrl(url)}
                       title="Land Drone View"
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -384,12 +408,22 @@ const LandDetails = () => {
               <div className="space-y-4">
                 <p className="text-sm text-gray-600 font-medium">I am interested in this land and would like to get more information.</p>
                 <div className="grid grid-cols-1 gap-3">
-                  <button className="w-full bg-gray-900 hover:bg-black text-white h-14 rounded-2xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95">
-                    <PhoneCall className="w-5 h-5" /> View Phone Number
-                  </button>
-                  <button className="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-50 h-14 rounded-2xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95">
+                  <a 
+                    href="https://wa.me/918768380240?text=I%20am%20interested" 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="w-full bg-gray-900 hover:bg-black text-white h-14 rounded-2xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95"
+                  >
+                    <MessageSquare className="w-5 h-5" /> Contact Owner
+                  </a>
+                  <a 
+                    href="https://wa.me/918768380240?text=I%20am%20interested" 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-50 h-14 rounded-2xl font-bold flex items-center justify-center gap-3 transition-transform active:scale-95"
+                  >
                     <MessageSquare className="w-5 h-5" /> Send WhatsApp
-                  </button>
+                  </a>
                 </div>
               </div>
 

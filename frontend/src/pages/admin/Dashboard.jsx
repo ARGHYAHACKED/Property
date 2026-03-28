@@ -84,8 +84,10 @@ const AdminOverview = () => {
                                     <tr key={user._id} className="border-b-2 border-gray-100 hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-6 font-black text-black uppercase tracking-tight">{user.name}</td>
                                         <td className="px-6 py-6 font-bold text-gray-600">{user.email}</td>
-                                        <td className="px-6 py-6 font-bold text-gray-600">{user.mobile || 'N/A'}</td>
-                                        <td className="px-6 py-6 font-bold text-gray-400">{new Date(user.createdAt).toLocaleDateString()}</td>
+                                        <td className="px-6 py-6 font-bold text-gray-600">{user.phone || 'N/A'}</td>
+                                        <td className="px-6 py-6 font-bold text-gray-400">
+                                            {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>

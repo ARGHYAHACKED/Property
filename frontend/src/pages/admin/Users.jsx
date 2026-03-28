@@ -31,7 +31,7 @@ const AdminUsers = () => {
     const filteredUsers = users.filter(user =>
         user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.mobile?.includes(searchTerm)
+        user.phone?.includes(searchTerm)
     );
 
     return (
@@ -75,8 +75,12 @@ const AdminUsers = () => {
                                 <tr key={user._id} className="border-b-2 border-gray-100 hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-6 font-black text-black uppercase tracking-tight">{user.name}</td>
                                     <td className="px-6 py-6 font-bold text-gray-600 truncate max-w-xs">{user.email}</td>
-                                    <td className="px-6 py-6 font-bold text-gray-600">{user.mobile || ' — '}</td>
-                                    <td className="px-6 py-6 font-bold text-gray-400">{new Date(user.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                                    <td className="px-6 py-6 font-bold text-gray-600">{user.phone || ' — '}</td>
+                                    <td className="px-6 py-6 font-bold text-gray-400">
+                                        {user.createdAt 
+                                            ? new Date(user.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) 
+                                            : 'N/A'}
+                                    </td>
                                     <td className="px-6 py-6">
                                         <div className="flex items-center gap-2">
                                             <div className="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>

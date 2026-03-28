@@ -170,7 +170,7 @@ const AdminDashboard = () => {
                             <tr key={user._id} className="border-b hover:bg-gray-50">
                               <td className="px-4 py-3">{user.name}</td>
                               <td className="px-4 py-3">{user.email}</td>
-                              <td className="px-4 py-3">{user.mobile || 'N/A'}</td>
+                              <td className="px-4 py-3">{user.phone || 'N/A'}</td>
                             </tr>
                           ))}
                         </tbody>

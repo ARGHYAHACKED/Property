@@ -298,7 +298,7 @@ const AdminDashboard = () => {
                             <tr key={user._id} className="border-b hover:bg-gray-50">
                               <td className="px-4 py-3">{user.name}</td>
                               <td className="px-4 py-3">{user.email}</td>
-                              <td className="px-4 py-3">{user.mobile || 'N/A'}</td>
+                              <td className="px-4 py-3">{user.phone || 'N/A'}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -338,7 +338,7 @@ const AdminDashboard = () => {
                           <tr key={user._id} className="border-b hover:bg-gray-50">
                             <td className="px-4 py-3">{user.name}</td>
                             <td className="px-4 py-3">{user.email}</td>
-                            <td className="px-4 py-3">{user.mobile || 'N/A'}</td>
+                            <td className="px-4 py-3">{user.phone || 'N/A'}</td>
                             <td className="px-4 py-3">{new Date(user.createdAt).toLocaleDateString()}</td>
                           </tr>
                         ))}
@@ -633,7 +633,7 @@ const AdminDashboard = () => {
                         <tbody>
                           {requests.propertyRequests?.map((r) => (
                             <tr key={r._id} className="border-b hover:bg-gray-50">
-                              <td className="px-4 py-3">{r.userId?.name || 'N/A'} {r.userId?.mobile && `(${r.userId.mobile})`}</td>
+                              <td className="px-4 py-3">{r.userId?.name || 'N/A'} {r.userId?.phone && `(${r.userId.phone})`}</td>
                               <td className="px-4 py-3">{r.landId?.title || r.landId?.name || '—'}</td>
                               <td className="px-4 py-3">{r.landId?.location || '—'}</td>
                               <td className="px-4 py-3">{r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '—'}</td>

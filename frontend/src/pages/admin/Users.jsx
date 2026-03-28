@@ -59,6 +59,7 @@ const AdminUsers = () => {
                     <table className="w-full text-left">
                         <thead>
                             <tr className="border-b-4 border-black">
+                                <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-500">Photo</th>
                                 <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-500">Name</th>
                                 <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-500">Email Address</th>
                                 <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-500">Phone</th>
@@ -68,11 +69,22 @@ const AdminUsers = () => {
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr><td colSpan="5" className="text-center py-12 animate-pulse font-bold text-gray-400 uppercase tracking-widest">Retrieving User Records...</td></tr>
+                                <tr><td colSpan="6" className="text-center py-12 animate-pulse font-bold text-gray-400 uppercase tracking-widest">Retrieving User Records...</td></tr>
                             ) : filteredUsers.length === 0 ? (
-                                <tr><td colSpan="5" className="text-center py-12 font-black text-black opacity-50 uppercase tracking-widest">No users found matching your search.</td></tr>
+                                <tr><td colSpan="6" className="text-center py-12 font-black text-black opacity-50 uppercase tracking-widest">No users found matching your search.</td></tr>
                             ) : filteredUsers.map(user => (
                                 <tr key={user._id} className="border-b-2 border-gray-100 hover:bg-gray-50 transition-colors">
+                                    <td className="px-6 py-6">
+                                        <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden border-2 border-black/10">
+                                            {user.profilePic ? (
+                                                <img src={user.profilePic} alt={user.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-black text-white text-[10px] font-black uppercase">
+                                                    {(user.name?.charAt(0) || 'U').toUpperCase()}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
                                     <td className="px-6 py-6 font-black text-black uppercase tracking-tight">{user.name}</td>
                                     <td className="px-6 py-6 font-bold text-gray-600 truncate max-w-xs">{user.email}</td>
                                     <td className="px-6 py-6 font-bold text-gray-600">{user.phone || ' — '}</td>

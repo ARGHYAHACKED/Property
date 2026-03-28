@@ -10,6 +10,7 @@ import API_BASE_URL from '../config/api';
 
 const AdminLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [adminInfo, setAdminInfo] = useState({ name: 'Admin', profilePic: '' });
     const [stats, setStats] = useState({
         totalUsers: 0,
         totalProperties: 0,
@@ -18,6 +19,17 @@ const AdminLayout = () => {
     });
     const navigate = useNavigate();
     const location = useLocation();
+
+    useEffect(() => {
+        const storedAdmin = localStorage.getItem('adminData');
+        if (storedAdmin) {
+            try {
+                setAdminInfo(JSON.parse(storedAdmin));
+            } catch (e) {
+                console.error('Error parsing admin data');
+            }
+        }
+    }, []);
 
     const fetchStats = async () => {
         try {
@@ -134,10 +146,18 @@ const AdminLayout = () => {
                     <div className="flex items-center gap-4">
                         <div className="hidden sm:flex flex-col items-end">
                             <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Administrator</span>
-                            <span className="text-sm font-black text-black">ADMIN MODE</span>
+                            <span className="text-sm font-black text-black uppercase">{adminInfo.name || 'ADMIN MODE'}</span>
                         </div>
                         <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white font-black">
-                            A
+                            {adminInfo.profilePic ? (
+                                <img 
+                                    src={adminInfo.profilePic} 
+                                    alt="Admin" 
+                                    className="w-full h-full rounded-full object-cover"
+                                />
+                            ) : (
+                                (adminInfo.name?.charAt(0) || 'A').toUpperCase()
+                            )}
                         </div>
                     </div>
                 </header>

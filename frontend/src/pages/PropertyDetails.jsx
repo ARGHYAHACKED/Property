@@ -106,7 +106,7 @@ const PropertyDetails = () => {
     const token = Cookies.get('token') || localStorage.getItem('token');
     if (!token) {
       alert('Please log in to request property papers.');
-      navigate('/login');
+      navigate('/login', { state: { from: location.pathname } });
       return;
     }
     setIsModalOpen(true);

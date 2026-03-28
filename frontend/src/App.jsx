@@ -38,8 +38,8 @@ const App = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const adminToken = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("token") || Cookies.get("token");
+    const adminToken = localStorage.getItem("adminToken") || Cookies.get("adminToken");
     setIsLoggedIn(!!token);
     setIsAdminLoggedIn(!!adminToken);
     

@@ -49,7 +49,8 @@ exports.login = async (req, res) => {
             message: "Login successful",
             token: token, // Send token in response
             email: admin.email,
-            name: admin.name
+            name: admin.name || 'Admin',
+            profilePic: admin.profilePic || ''
         });
     } catch (error) {
         console.error('Error during admin login:', error);

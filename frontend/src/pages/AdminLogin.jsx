@@ -29,6 +29,14 @@ const AdminLogin = () => {
         // Store token in localStorage as fallback
         if (response.data.token) {
           localStorage.setItem('adminToken', response.data.token);
+          
+          // Store admin metadata for UI
+          const adminData = {
+            email: response.data.email,
+            name: response.data.name,
+            profilePic: response.data.profilePic
+          };
+          localStorage.setItem('adminData', JSON.stringify(adminData));
         }
         console.log('Login successful, redirecting to dashboard');
         navigate('/admin/dashboard');  // Navigate to the dashboard

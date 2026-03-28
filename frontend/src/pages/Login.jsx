@@ -1,7 +1,7 @@
 import React, { useState , useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import API_BASE_URL from '../config/api';
 
 const LoginPage = () => {
@@ -10,6 +10,8 @@ const LoginPage = () => {
     const [isOtpSent, setIsOtpSent] = useState(false);
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from || "/profile";
 
 
 
@@ -43,7 +45,7 @@ const LoginPage = () => {
                 const token = response.data.token;
                 Cookies.set('token', token, { expires: 7 });
                 localStorage.setItem('token', token);
-                navigate('/profile', { replace: true });
+                navigate(from, { replace: true });
             }
         } catch (error) {
             console.error('Error verifying OTP:', error.response?.data || error.message);

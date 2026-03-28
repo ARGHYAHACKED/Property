@@ -23,7 +23,7 @@ const Navbar = ({ isLoggedIn: propIsLoggedIn, isAdmin }) => {
 
   useEffect(() => {
     const checkAuthStatus = async () => {
-      const token = Cookies.get("token");
+      const token = Cookies.get("token") || localStorage.getItem("token");
 
       if (token) {
         try {

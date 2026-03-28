@@ -310,7 +310,7 @@ const HeroSection = () => {
       {properties.length > 0 && currentProperty && (
         <div className="absolute inset-0 z-0 h-full">
           <img
-            src={currentProperty.imageUrls?.[0] || 'https://via.placeholder.com/1920x1080'}
+            src={currentProperty.imageUrls?.[0] || 'https://placehold.co/1920x1080?text=55+Acre+Prime+Listing'}
             alt="Hero Background"
             className="w-full h-full object-cover opacity-40 lg:opacity-100"
           />
@@ -369,7 +369,11 @@ const HeroSection = () => {
                     {currentProperty.avgPrice || formatPrice(currentProperty.price)}
                   </p>
                   <button
-                    onClick={() => navigate(`/property-details/${currentProperty.id || currentProperty._id}`)}
+                    onClick={() => {
+                        const id = currentProperty.id || currentProperty._id;
+                        const path = currentProperty.type === 'land' ? `/land/${id}` : `/property-details/${id}`;
+                        navigate(path);
+                    }}
                     className="w-full bg-black text-white font-black uppercase tracking-widest py-3 hover:bg-gray-800 transition-all flex items-center justify-center gap-2 group text-xs"
                   >
                     View Details
@@ -533,7 +537,7 @@ const PropertyCard = ({ item, type, navigate }) => {
       {/* Image Container */}
       <div className="relative h-32 sm:h-48 md:h-64 bg-gray-200 overflow-hidden">
         <img
-          src={item.imageUrl || item.imageUrls?.[0] || 'https://via.placeholder.com/400x300'}
+          src={item.imageUrl || item.imageUrls?.[0] || 'https://placehold.co/400x300?text=Property+Image'}
           alt={item.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />

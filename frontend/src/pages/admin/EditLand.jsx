@@ -186,7 +186,15 @@ const EditLand = () => {
         images: images
       };
 
-      await axios.put(`${API_BASE_URL}/api/lands/${id}`, submitData, { withCredentials: true });
+      const adminToken = localStorage.getItem('adminToken');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${adminToken || ''}`,
+        },
+        withCredentials: true
+      };
+
+      await axios.put(`${API_BASE_URL}/api/lands/${id}`, submitData, config);
       alert('Land updated successfully!');
       navigate('/admin/lands');
     } catch (err) {

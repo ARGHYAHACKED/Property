@@ -164,7 +164,7 @@ const Land = () => {
   };
 
   const handleLandClick = (land) => {
-    navigate(`/land-details/${land._id || land.id}`); // Use _id or fallback to id
+    navigate(`/land/${land._id || land.id}`); // Use _id or fallback to id
   };
 
   return (
@@ -288,7 +288,7 @@ const Land = () => {
               >
                 <div className="overflow-hidden h-32 md:h-48 rounded-none mb-3">
                   <img
-                    src={land.imageUrl || "https://via.placeholder.com/400x300"}
+                    src={land.imageUrl || "https://placehold.co/400x300?text=Land+Image"}
                     alt={land.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

@@ -71,6 +71,7 @@ const App = () => {
           <Route path="/property" element={<Property />} />
           <Route path="/land" element={<Land />} />
           <Route path="/land/:id" element={<LandDetails />} />
+          <Route path="/land-details/:id" element={<LandDetails />} />
           <Route path="/add-property" element={<AddProperty />} />
           <Route path="/add-land" element={<AddLand />} />
           <Route path="/property-details/:id" element={<PropertyDetails />} />

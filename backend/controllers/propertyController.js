@@ -123,16 +123,61 @@ exports.getPropertyById = async (req, res) => {
 // Update property details
 exports.updateProperty = async (req, res) => {
     try {
-        const updatedProperty = await Property.findByIdAndUpdate(req.params.id, req.body, {
+        const { id } = req.params;
+        let updateData = { ...req.body };
+
+        // 1. Handle main property images (base64 check)
+        if (updateData.images && Array.isArray(updateData.images)) {
+            const uploadPromises = updateData.images.map(async (img) => {
+                if (img.startsWith('data:image')) {
+                    const result = await cloudinary.uploader.upload(img, {
+                        folder: "property_images",
+                        resource_type: "auto",
+                        chunk_size: 6000000,
+                        timeout: 120000
+                    });
+                    return result.secure_url;
+                }
+                return img; // Already a URL
+            });
+            updateData.imageUrls = await Promise.all(uploadPromises);
+            delete updateData.images; // Remove raw base64 data
+        }
+
+        // 2. Handle floor plan images (base64 check)
+        if (updateData.floorPlans && Array.isArray(updateData.floorPlans)) {
+            updateData.floorPlans = await Promise.all(
+                updateData.floorPlans.map(async (plan) => {
+                    if (plan.imageUrl && plan.imageUrl.startsWith('data:image')) {
+                        try {
+                            const result = await cloudinary.uploader.upload(plan.imageUrl, {
+                                folder: "floor_plans",
+                                resource_type: "auto",
+                                chunk_size: 6000000,
+                                timeout: 120000
+                            });
+                            return { ...plan, imageUrl: result.secure_url };
+                        } catch (err) {
+                            console.error('Floor plan upload error during update:', err);
+                            return plan;
+                        }
+                    }
+                    return plan;
+                })
+            );
+        }
+
+        const updatedProperty = await Property.findByIdAndUpdate(id, updateData, {
             new: true,
+            runValidators: true
         });
 
         if (!updatedProperty) return res.status(404).json({ message: 'Property not found' });
 
         res.status(200).json(updatedProperty);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('Update property error:', error);
+        res.status(500).json({ error: 'Server error', message: error.message });
     }
 };
 

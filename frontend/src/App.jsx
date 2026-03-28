@@ -28,6 +28,8 @@ import Createuser from "./pages/Createuser";
 import SellLand from "./pages/SellLand";
 import LeadPopup from "./components/LeadPopup";
 import AdminLeads from "./pages/admin/Leads";
+import EditProperty from "./pages/admin/EditProperty";
+import EditLand from "./pages/admin/EditLand";
 import CustomCursor from "./components/CustomCursor";
 
 const App = () => {
@@ -102,6 +104,8 @@ const App = () => {
             <Route path="marketing" element={<AdminMarketing />} />
             <Route path="marketing/webbanner" element={<AdminBannerManagement />} />
             <Route path="leads" element={<AdminLeads />} />
+            <Route path="edit-property/:id" element={<EditProperty />} />
+            <Route path="edit-land/:id" element={<EditLand />} />
           </Route>
         </Routes>
       </div>

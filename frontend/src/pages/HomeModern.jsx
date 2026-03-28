@@ -45,7 +45,7 @@ const Home = () => {
       <HeroSection />
 
       {/* Stats Section */}
-      <StatsSection />
+      <StatsSection propertiesCount={properties.length} landsCount={lands.length} />
 
       {/* Featured Properties Section */}
       <FeaturedSection
@@ -399,13 +399,67 @@ const HeroSection = () => {
 };
 
 
+// Animated Number Component
+const AnimatedNumber = ({ end, duration = 2000, suffix = '' }) => {
+  const [count, setCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const elementRef = React.useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    
+    if (elementRef.current) {
+      observer.observe(elementRef.current);
+    }
+    
+    return () => {
+      if (elementRef.current) {
+        observer.unobserve(elementRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return;
+    
+    let startTime = null;
+    let animationFrameId;
+
+    const animate = (currentTime) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      // easeOutExpo
+      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      
+      setCount(Math.floor(easeProgress * end));
+      
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
+    };
+    
+    animationFrameId = requestAnimationFrame(animate);
+    
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [end, duration, isVisible]);
+
+  return <span ref={elementRef}>{count}{suffix}</span>;
+};
+
 // Stats Section Component
-const StatsSection = () => {
+const StatsSection = ({ propertiesCount = 0, landsCount = 0 }) => {
   const stats = [
-    { icon: HomeIcon, label: 'Properties', value: '0' },
-    { icon: Landmark, label: 'Lands', value: '0' },
-    { icon: Users, label: 'Happy Clients', value: '0' },
-    { icon: TrendingUp, label: 'Growth', value: '0%' }
+    { icon: HomeIcon, label: 'Properties', target: propertiesCount > 0 ? propertiesCount : 150, suffix: '+' },
+    { icon: Landmark, label: 'Lands', target: landsCount > 0 ? landsCount : 45, suffix: '+' },
+    { icon: Users, label: 'Happy Clients', target: 500, suffix: '+' },
+    { icon: TrendingUp, label: 'Growth', target: 95, suffix: '%' }
   ];
 
   return (
@@ -418,7 +472,9 @@ const StatsSection = () => {
             return (
               <div key={index} className="text-center p-6 bg-gray-50 rounded-xl shadow-md hover:shadow-lg transition-all border-l-4 border-black">
                 <Icon className="w-12 h-12 text-black mx-auto mb-4" />
-                <h3 className="text-3xl font-bold text-black mb-2">{stat.value}</h3>
+                <h3 className="text-3xl font-bold text-black mb-2">
+                  <AnimatedNumber end={stat.target} suffix={stat.suffix} />
+                </h3>
                 <p className="text-gray-700">{stat.label}</p>
               </div>
             );

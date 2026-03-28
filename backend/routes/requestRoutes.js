@@ -2,12 +2,18 @@ const express = require('express');
 const router = express.Router();
 
 // Import Controller (Create it if it doesn't exist)
-const { createLandRequest, getLandRequests, updateLandRequest, deleteLandRequest } = require('../controllers/requestController');
+const { createPropertyRequest, getPropertyRequests, updatePropertyRequest, deletePropertyRequest } = require('../controllers/requestController');
+const { authenticate } = require('../middlewares/authMiddleware');
 
 // Define Routes
-router.post('/', createLandRequest); // Handle land request creation
-router.get('/', getLandRequests); // Retrieve all land requests
-// router.put('/:id', updateLandRequest); // Update a specific land request
-// router.delete('/:id', deleteLandRequest); // Delete a specific land request
+router.post('/create', authenticate, (req, res, next) => {
+    console.log('POST /api/request/create called');
+    next();
+}, createPropertyRequest); // Handle property request creation
+
+router.get('/', (req, res, next) => {
+    console.log('GET /api/request/ called');
+    next();
+}, getPropertyRequests); // Retrieve all property requests
 
 module.exports = router;

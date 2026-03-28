@@ -8,6 +8,28 @@ const AdminLands = () => {
     const navigate = useNavigate();
     const [lands, setLands] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const adminAuth = () => ({
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('adminToken') || ''}`,
+        },
+    });
+
+    const fetchLands = async () => {
+        try {
+            setLoading(true);
+            const res = await axios.get(`${API_BASE_URL}/api/lands`, adminAuth());
+            setLands(Array.isArray(res.data) ? res.data : []);
+        } catch (error) {
+            console.error('Error fetching lands:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchLands();
+    }, []);
     const handleDelete = async (id) => {
         if (window.confirm('Delete this land permanently?')) {
             try {

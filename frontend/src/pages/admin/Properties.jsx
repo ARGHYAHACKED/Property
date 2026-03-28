@@ -8,6 +8,28 @@ const AdminProperties = () => {
     const navigate = useNavigate();
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const adminAuth = () => ({
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('adminToken') || ''}`,
+        },
+    });
+
+    const fetchProperties = async () => {
+        try {
+            setLoading(true);
+            const res = await axios.get(`${API_BASE_URL}/api/properties`, adminAuth());
+            setProperties(Array.isArray(res.data) ? res.data : []);
+        } catch (error) {
+            console.error('Error fetching properties:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProperties();
+    }, []);
     const handleDelete = async (id) => {
         if (window.confirm('Delete this property permanently?')) {
             try {

@@ -25,20 +25,30 @@ const Profile = ({ onLogout }) => {
           },
         });
 
-        // if (!response.ok) {
-        //   throw new Error("Failed to fetch profile");
-        // }
+        if (!response.ok) {
+          throw new Error("Failed to fetch profile");
+        }
+        
         const data = await response.json();
+        
+        if (!data || !data.user) {
+           throw new Error("Invalid profile data");
+        }
+        
         setUser(data.user);
       } catch (error) {
-        // navigate("/login");
+        console.error("Profile fetch error:", error);
+        localStorage.removeItem("token");
+        Cookies.remove("token");
+        onLogout?.();
+        navigate("/login", { replace: true });
       } finally {
         setLoading(false);
       }
     };
 
     fetchProfile();
-  }, [navigate]);
+  }, [navigate, onLogout]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");

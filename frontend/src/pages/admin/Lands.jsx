@@ -65,42 +65,45 @@ const AdminLands = () => {
                         <p className="text-3xl font-black uppercase tracking-tighter text-gray-300">No Assets Under Management</p>
                     </div>
                 ) : (
-                    lands.map(land => (
-                        <div key={land._id} className="bg-white rounded-none shadow-2xl overflow-hidden border-t-8 border-black transition-all transform hover:scale-[1.02]">
-                            <div className="h-64 relative bg-gray-200">
-                                <img 
-                                    src={(land.imageUrls && land.imageUrls[0]) || land.images?.[0] || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80'} 
-                                    alt={land.title} 
-                                    className="w-full h-full object-cover"
-                                />
-                                <div className="absolute top-0 right-0 bg-black text-white px-6 py-2 font-black uppercase tracking-widest text-xs">
-                                    Land
+                    lands.map(land => {
+                        const landId = land.id || land._id;
+                        return (
+                            <div key={landId} className="bg-white rounded-none shadow-2xl overflow-hidden border-t-8 border-black transition-all transform hover:scale-[1.02]">
+                                <div className="h-64 relative bg-gray-200">
+                                    <img 
+                                        src={(land.imageUrls && land.imageUrls[0]) || land.images?.[0] || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80'} 
+                                        alt={land.title} 
+                                        className="w-full h-full object-cover"
+                                    />
+                                    <div className="absolute top-0 right-0 bg-black text-white px-6 py-2 font-black uppercase tracking-widest text-xs">
+                                        Land
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <div className="p-8">
-                                <h3 className="text-3xl font-black uppercase tracking-tighter text-black mb-2 truncate">{land.title}</h3>
-                                <p className="flex items-center gap-2 text-gray-500 font-bold uppercase tracking-widest text-xs mb-4"><MapPin className="w-4 h-4" /> {land.location}</p>
                                 
-                                <div className="flex justify-between items-end mb-8 border-b-2 border-gray-100 pb-4">
-                                    <div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Price</p>
-                                        <p className="text-4xl font-black text-black tracking-tighter">₹ {land.price?.toLocaleString()}</p>
+                                <div className="p-8">
+                                    <h3 className="text-3xl font-black uppercase tracking-tighter text-black mb-2 truncate">{land.title}</h3>
+                                    <p className="flex items-center gap-2 text-gray-500 font-bold uppercase tracking-widest text-xs mb-4"><MapPin className="w-4 h-4" /> {land.location}</p>
+                                    
+                                    <div className="flex justify-between items-end mb-8 border-b-2 border-gray-100 pb-4">
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Price</p>
+                                            <p className="text-4xl font-black text-black tracking-tighter">₹ {land.price?.toLocaleString()}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Area</p>
+                                            <p className="text-lg font-black text-black tracking-tighter">{land.area} ACRES</p>
+                                        </div>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Area</p>
-                                        <p className="text-lg font-black text-black tracking-tighter">{land.area} ACRES</p>
+    
+                                    <div className="flex gap-4">
+                                        <button onClick={() => navigate(`/land/${landId}`)} className="bg-black text-white p-4 font-black transition-colors hover:bg-gray-800"><Eye className="w-5 h-5"/></button>
+                                        <button onClick={() => navigate(`/admin/edit-land/${landId}`)} className="flex-grow bg-black text-white px-6 py-4 font-black uppercase tracking-widest text-xs tracking-tighter hover:bg-gray-800 transition-colors">EDIT ASSET</button>
+                                        <button onClick={() => handleDelete(landId)} className="bg-black text-white p-4 font-black transition-colors hover:bg-red-600"><Trash2 className="w-5 h-5"/></button>
                                     </div>
-                                </div>
-
-                                <div className="flex gap-4">
-                                    <button onClick={() => navigate(`/land/${land._id}`)} className="bg-black text-white p-4 font-black transition-colors hover:bg-gray-800"><Eye className="w-5 h-5"/></button>
-                                    <button onClick={() => navigate(`/admin/edit-land/${land._id}`)} className="flex-grow bg-black text-white px-6 py-4 font-black uppercase tracking-widest text-xs tracking-tighter hover:bg-gray-800 transition-colors">EDIT ASSET</button>
-                                    <button onClick={() => handleDelete(land._id)} className="bg-black text-white p-4 font-black transition-colors hover:bg-red-600"><Trash2 className="w-5 h-5"/></button>
                                 </div>
                             </div>
-                        </div>
-                    ))
+                        );
+                    })
                 )}
             </div>
         </div>

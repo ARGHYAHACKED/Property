@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Land = require('../models/landModel');
 const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
@@ -100,9 +101,17 @@ exports.getAllLands = async (req, res) => {
 
 exports.getLandById = async (req, res) => {
     try {
-        // Retrieve the land by ID without populating any fields since 'seller' is not a reference
-        const land = await Land.findById(req.params.id);
-        console.log(req.params.id)
+        const { id } = req.params;
+
+        // Validate ID
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.warn(`Invalid Land ID received: ${id}`);
+            return res.status(400).json({ error: 'Invalid land ID format' });
+        }
+
+        // Retrieve the land by ID
+        const land = await Land.findById(id);
+        console.log(`Fetching Land ID: ${id}`);
 
         // If the land is not found, return a 404 error
         if (!land) {
@@ -121,6 +130,13 @@ exports.getLandById = async (req, res) => {
 exports.updateLand = async (req, res) => {
     try {
         const { id } = req.params;
+
+        // Validate ID
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.warn(`Invalid Land ID for update: ${id}`);
+            return res.status(400).json({ error: 'Invalid land ID format' });
+        }
+
         let updateData = { ...req.body };
 
         // 1. Handle main images (base64 check)
@@ -180,7 +196,15 @@ exports.updateLand = async (req, res) => {
 
 exports.deleteLand = async (req, res) => {
     try {
-        const land = await Land.findByIdAndDelete(req.params.id);
+        const { id } = req.params;
+
+        // Validate ID
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.warn(`Invalid Land ID for deletion: ${id}`);
+            return res.status(400).json({ error: 'Invalid land ID format' });
+        }
+
+        const land = await Land.findByIdAndDelete(id);
 
         if (!land) return res.status(404).json({ message: 'Land not found' });
 

@@ -42,6 +42,9 @@ const App = () => {
     const adminToken = localStorage.getItem("adminToken");
     setIsLoggedIn(!!token);
     setIsAdminLoggedIn(!!adminToken);
+    
+    // Global scroll-to-top on route change
+    window.scrollTo(0, 0);
   }, [location.pathname]);
 
   const isAdminPath = location.pathname.startsWith('/admin');

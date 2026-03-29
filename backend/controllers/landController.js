@@ -78,8 +78,8 @@ exports.addLand = async (req, res) => {
 
 exports.getAllLands = async (req, res) => {
     try {
-        // Fetch specific fields from the Land model
-        const lands = await Land.find({}, 'title description price location imageUrls showInBanner');
+        // Fetch specific fields from the Land model (including area and imageUrls)
+        const lands = await Land.find({}, 'title description price location area imageUrls showInBanner');
 
         // Modify description to include only the first 15 words
         const updatedLands = lands.map((land) => ({
@@ -88,7 +88,9 @@ exports.getAllLands = async (req, res) => {
             description: land.description ? land.description.split(' ').slice(0, 15).join(' ') + '...' : '', // Limit description to 15 words
             price: land.price,
             location: land.location,
+            area: land.area, // Include the area field
             imageUrl: land.imageUrls && land.imageUrls.length > 0 ? land.imageUrls[0] : null,
+            imageUrls: land.imageUrls || [], // Include the full array for the frontend
             showInBanner: land.showInBanner || false,
         }));
 

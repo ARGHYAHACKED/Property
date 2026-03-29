@@ -153,7 +153,8 @@ const AddLand = () => {
         images: images
       };
 
-      await axios.post(`${API_BASE_URL}/api/lands`, submitData, { withCredentials: true });
+      const response = await axios.post(`${API_BASE_URL}/api/lands`, submitData, { withCredentials: true });
+      console.log('Land Submission Response:', response.data);
       alert('Land listing added successfully!');
       navigate('/admin/dashboard');
     } catch (err) {

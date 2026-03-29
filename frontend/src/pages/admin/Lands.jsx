@@ -19,6 +19,7 @@ const AdminLands = () => {
         try {
             setLoading(true);
             const res = await axios.get(`${API_BASE_URL}/api/lands`, adminAuth());
+            console.log('Fetched lands data:', res.data);
             setLands(Array.isArray(res.data) ? res.data : []);
         } catch (error) {
             console.error('Error fetching lands:', error);

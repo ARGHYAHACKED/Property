@@ -3,83 +3,82 @@ const mongoose = require('mongoose');
 const landSchema = new mongoose.Schema({
     title: {
         type: String,
-        // required: true 
+        required: true
     },
-    description: {
+    description: String,
+
+    propertyType: {
         type: String,
-        // required: true 
+        enum: ['land', 'plot', 'apartment', 'villa', 'commercial'],
+        required: true,
+        default: 'land'
     },
-    age: {
-        type: Number, // Represents the age of the property in years
-        // required: true 
-    },
+
     location: {
-        type: String,
-        // required: true 
+        address: String,
+        city: String,
+        state: String,
+        pincode: String,
+        coordinates: {
+            lat: Number,
+            lng: Number
+        }
     },
-    amenities: {
-        type: String, // An array of strings to list available amenities
-        // required: true 
-    },
+
     price: {
-        type: Number,
-        // required: true 
+        total: Number,
+        perSqft: Number,
+        negotiable: {
+            type: Boolean,
+            default: false
+        }
     },
+
     area: {
-        type: String, // Represents the size/area of the property
-        // required: true 
+        value: Number,
+        unit: {
+            type: String,
+            enum: ['sqft', 'sqyd', 'acre', 'hectare'],
+            default: 'acre'
+        }
     },
+
+    ownershipType: {
+        type: String,
+        enum: ['freehold', 'leasehold', 'power_of_attorney']
+    },
+
+    rera: {
+        registered: {
+            type: Boolean,
+            default: false
+        },
+        reraId: String,
+        state: String
+    },
+
+    amenitiesList: [String],
+
     imageUrls: {
-        type: [String], // A single URL or file path for the image
+        type: [String],
         default: []
     },
-    developer: String,
-    emiStarts: String,
-    possessionStarts: String,
-    avgPrice: String,
-    sizes: String,
-    configurations: String,
-    reraId: String,
-    projectUnits: String,
-    areaUnit: String,
-    projectSize: String,
-    launchDate: String,
-    overviewProject: String,
-    aroundProject: [{
-        category: String,
+    
+    videos: [String],
+
+    documents: [{
         name: String,
-        distance: String
+        url: String
     }],
-    moreAboutProject: String,
-    floorPlans: [{
-        title: String,
-        size: String,
-        price: String,
-        imageUrl: String
-    }],
-    tourVideos: [String],
-    amenitiesList: [String],
-    specifications: {
-        type: Map,
-        of: Map
+
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
-    reviews: [{
-        user: String,
-        rating: Number,
-        comment: String,
-        date: { type: Date, default: Date.now }
-    }],
-    priceTrends: String,
-    brochureUrl: String,
-    locality: String,
-    contactDeveloper: {
-        name: String,
-        phone: String,
-        email: String
-    },
-    showInBanner: {
-        type: Boolean,
-        default: false
+
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
 });
 

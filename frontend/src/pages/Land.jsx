@@ -142,25 +142,27 @@ const Land = () => {
 
     const locationMatch = selectedLocations.length === 0
       ? true
-      : selectedLocations.includes(land.location);
+      : (land.location?.city === selectedLocations[0] || land.location?.address === selectedLocations[0] || land.location?.state === selectedLocations[0]);
 
     const areaMatch = selectedAreas.length === 0 ? true : selectedAreas.some(selectedRange => {
-      const landAreaNum = parseFloat(land.area);
+      const landAreaNum = parseFloat(land.area?.value);
       return landAreaNum >= selectedRange.min && landAreaNum <= selectedRange.max;
     });
 
     const priceMatch = selectedPrices.length === 0 ? true : selectedPrices.some(selectedRange => {
-      return land.price >= selectedRange.min && land.price <= selectedRange.max;
+      const totalPrice = parseFloat(land.price?.total);
+      return totalPrice >= selectedRange.min && totalPrice <= selectedRange.max;
     });
 
     return codeMatch && locationMatch && areaMatch && priceMatch;
   });
 
   const formatPrice = (price) => {
-    if (!price) return 'Price on Request';
-    if (price >= 10000000) return `₹${(price / 10000000).toFixed(2)} Cr`;
-    if (price >= 100000) return `₹${(price / 100000).toFixed(2)} L`;
-    return `₹${price.toLocaleString()}`;
+    const amount = typeof price === 'object' ? price?.total : price;
+    if (!amount) return 'Price on Request';
+    if (amount >= 10000000) return `₹${(amount / 10000000).toFixed(2)} Cr`;
+    if (amount >= 100000) return `₹${(amount / 100000).toFixed(2)} L`;
+    return `₹${amount.toLocaleString()}`;
   };
 
   const handleLandClick = (land) => {
@@ -288,7 +290,7 @@ const Land = () => {
               >
                 <div className="overflow-hidden h-32 md:h-48 rounded-none mb-3">
                   <img
-                    src={land.imageUrl || "https://placehold.co/400x300?text=Land+Image"}
+                    src={(land.imageUrls && land.imageUrls[0]) || land.imageUrl || "https://placehold.co/400x300?text=Land+Image"}
                     alt={land.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -297,9 +299,11 @@ const Land = () => {
                 <p className="hidden md:block text-gray-500 text-xs mb-2 line-clamp-2 font-medium">{land.description}</p>
                 <div className="mt-auto">
                     <p className="text-sm md:text-xl font-black text-black mb-1">
-                    {land.avgPrice || formatPrice(land.price)}
+                    {land.price?.total ? formatPrice(land.price.total) : 'Price on Request'}
                     </p>
-                    <p className="text-[10px] md:text-sm font-bold uppercase tracking-widest text-gray-400 truncate">📍 {land.location}</p>
+                    <p className="text-[10px] md:text-sm font-bold uppercase tracking-widest text-gray-400 truncate">
+                        📍 {land.location?.city || land.location?.address || land.location || 'N/A'}
+                    </p>
                     
                     <button
                     onClick={(e) => { e.stopPropagation(); handleLandClick(land); }}

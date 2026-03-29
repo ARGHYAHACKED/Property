@@ -92,10 +92,11 @@ const LandDetails = () => {
   };
 
   const formatPrice = (price) => {
-    if (!price) return 'Price on Request';
-    if (price >= 10000000) return `₹${(price / 10000000).toFixed(2)} Cr`;
-    if (price >= 100000) return `₹${(price / 100000).toFixed(2)} L`;
-    return `₹${price.toLocaleString()}`;
+    const amount = typeof price === 'object' ? price?.total : price;
+    if (!amount) return 'Price on Request';
+    if (amount >= 10000000) return `₹${(amount / 10000000).toFixed(2)} Cr`;
+    if (amount >= 100000) return `₹${(amount / 100000).toFixed(2)} L`;
+    return `₹${amount.toLocaleString()}`;
   };
 
   const handleRequestPapers = () => {
@@ -159,7 +160,7 @@ const LandDetails = () => {
             <div className="hidden md:block">
               <h1 className="text-lg font-bold truncate max-w-[300px]">{land.title}</h1>
               <p className="text-xs text-gray-500 flex items-center gap-1">
-                <MapPin className="w-3 h-3" /> {land.location}
+                <MapPin className="w-3 h-3" /> {land.location?.city || land.location?.address || land.location || 'Location Not Provided'}
               </p>
             </div>
           </div>
@@ -189,11 +190,11 @@ const LandDetails = () => {
         <div className="max-width-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
           <div className="md:col-span-2">
             <h2 className="text-3xl font-bold mb-1">{land.title}</h2>
-            <p className="text-gray-400 flex items-center gap-1"><MapPin className="w-4 h-4" /> {land.location}</p>
+            <p className="text-gray-400 flex items-center gap-1"><MapPin className="w-4 h-4" /> {land.location?.city || land.location?.address || land.location || 'Location Not Provided'}</p>
           </div>
           <div className="text-right md:col-span-1 hidden md:block">
-            <p className="text-gray-400 text-sm">Avg. Price</p>
-            <p className="text-2xl font-bold text-green-400">{land.avgPrice || formatPrice(land.price)}</p>
+            <p className="text-gray-400 text-sm">Total Price</p>
+            <p className="text-2xl font-bold text-green-400">{land.price?.total ? formatPrice(land.price.total) : 'Price on Request'}</p>
           </div>
           <div className="md:col-span-1">
             <a 
@@ -263,19 +264,19 @@ const LandDetails = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-green-50 rounded-2xl p-6 border border-green-100">
             <div className="space-y-1">
               <p className="text-gray-500 text-xs uppercase font-bold">Total Area</p>
-              <p className="text-gray-900 font-bold">{land.area} {land.areaUnit || 'Acres'}</p>
+              <p className="text-gray-900 font-bold">{land.area?.value} {land.area?.unit || 'Acres'}</p>
             </div>
             <div className="space-y-1 border-l-0 md:border-l border-green-200 md:pl-4">
               <p className="text-gray-500 text-xs uppercase font-bold">Land Type</p>
-              <p className="text-gray-900 font-bold">{land.possessionStarts || 'Agricultural'}</p>
+              <p className="text-gray-900 font-bold uppercase">{land.propertyType || 'Land'}</p>
             </div>
             <div className="space-y-1 border-l-0 md:border-l border-green-200 md:pl-4">
-              <p className="text-gray-500 text-xs uppercase font-bold">Avg. Price</p>
-              <p className="text-gray-900 font-bold text-green-600">{land.avgPrice || formatPrice(land.price)}</p>
+              <p className="text-gray-500 text-xs uppercase font-bold">Total Price</p>
+              <p className="text-gray-900 font-bold text-green-600">{land.price?.total ? formatPrice(land.price.total) : 'Price on Request'}</p>
             </div>
             <div className="space-y-1 border-l-0 md:border-l border-green-200 md:pl-4">
               <p className="text-gray-500 text-xs uppercase font-bold">RERA ID</p>
-              <p className="text-gray-900 font-bold">{land.reraId || 'Not Applicable'}</p>
+              <p className="text-gray-900 font-bold">{land.rera?.reraId || 'Not Applicable'}</p>
             </div>
           </div>
 
@@ -283,7 +284,7 @@ const LandDetails = () => {
           <section ref={sectionRefs.overview} className="space-y-6">
             <div className="flex items-center justify-between border-b pb-4">
               <h3 className="text-2xl font-bold flex items-center gap-2"><Info className="text-green-600" /> Land Overview</h3>
-              {land.reraId && <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold">RERA Verified</span>}
+              {land.rera?.registered && <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold">RERA Verified</span>}
             </div>
 
             <div className="space-y-4">
@@ -293,7 +294,7 @@ const LandDetails = () => {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 font-bold uppercase">Landowner / Developer</p>
-                  <p className="text-lg font-bold text-gray-900">{land.developer || 'Direct Owner'}</p>
+                  <p className="text-lg font-bold text-gray-900">{land.contactDeveloper?.name || 'Direct Owner'}</p>
                 </div>
               </div>
 
@@ -314,14 +315,14 @@ const LandDetails = () => {
                 <Ruler className="text-gray-400" />
                 <div>
                   <p className="text-xs text-gray-500">Dimensions</p>
-                  <p className="font-bold">{land.sizes || land.area + ' ' + (land.areaUnit || 'acres')}</p>
+                  <p className="font-bold">{land.area?.value} {land.area?.unit || 'acres'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 border rounded-xl hover:border-green-200 transition-colors">
                 <Map className="text-gray-400" />
                 <div>
                   <p className="text-xs text-gray-500">Locality</p>
-                  <p className="font-bold">{land.locality || land.location}</p>
+                  <p className="font-bold">{land.location?.city || land.location?.address || land.location || 'N/A'}</p>
                 </div>
               </div>
             </div>

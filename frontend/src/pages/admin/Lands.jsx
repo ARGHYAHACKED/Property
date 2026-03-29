@@ -83,16 +83,22 @@ const AdminLands = () => {
                                 
                                 <div className="p-8">
                                     <h3 className="text-3xl font-black uppercase tracking-tighter text-black mb-2 truncate">{land.title}</h3>
-                                    <p className="flex items-center gap-2 text-gray-500 font-bold uppercase tracking-widest text-xs mb-4"><MapPin className="w-4 h-4" /> {land.location}</p>
+                                    <p className="flex items-center gap-2 text-gray-500 font-bold uppercase tracking-widest text-xs mb-4">
+                                        <MapPin className="w-4 h-4" /> {land.location?.city || land.location?.address || 'N/A'}, {land.location?.state || ''}
+                                    </p>
                                     
                                     <div className="flex justify-between items-end mb-8 border-b-2 border-gray-100 pb-4">
                                         <div>
                                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Price</p>
-                                            <p className="text-4xl font-black text-black tracking-tighter">₹ {land.price?.toLocaleString()}</p>
+                                            <p className="text-4xl font-black text-black tracking-tighter">
+                                                ₹ {land.price?.total?.toLocaleString() || '0'}
+                                            </p>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Area</p>
-                                            <p className="text-lg font-black text-black tracking-tighter">{land.area} ACRES</p>
+                                            <p className="text-lg font-black text-black tracking-tighter uppercase">
+                                                {land.area?.value || '0'} {land.area?.unit || 'ACRES'}
+                                            </p>
                                         </div>
                                     </div>
     
